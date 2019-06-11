@@ -1,5 +1,5 @@
 import { prismaObjectType } from 'nexus-prisma';
-import { stringArg } from 'nexus';
+import { stringArg, idArg } from 'nexus';
 import { Context, APP_SECRET, getUserId } from '../utils';
 import { hash, verify } from 'argon2';
 import { sign } from 'jsonwebtoken';
@@ -66,6 +66,15 @@ export const Mutation = prismaObjectType({
           content,
           author: { connect: { id: userId } }
         });
+      }
+    });
+
+    t.field('deleteMeow', {
+      type: 'Meow',
+      nullable: true,
+      args: { id: idArg() },
+      resolve: (_, { id }, ctx: Context) => {
+        return ctx.prisma.deleteMeow({ id });
       }
     });
   }

@@ -6,11 +6,19 @@ const isAuthenticatedUser = rule()((_, __, ctx: Context) => {
   return Boolean(userId);
 });
 
+const isMeowOwner = rule()(async (_, { id }, ctx: Context) => {
+  const userId = getUserId(ctx);
+  const author = await ctx.prisma.meow({ id }).author();
+
+  return userId === author.id;
+});
+
 export default shield({
   Query: {
     me: isAuthenticatedUser
   },
   Mutation: {
-    postMeow: isAuthenticatedUser
+    postMeow: isAuthenticatedUser,
+    deleteMeow: isMeowOwner
   }
 });
