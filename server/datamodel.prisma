@@ -1,0 +1,13 @@
+type User {
+  id: ID! @id
+  username: String! @unique
+  password: String!
+  email: String
+  meows: [Meow!]!
+}
+
+type Meow {
+  id: ID! @id
+  content: String!
+  author: User @relation(link: INLINE)
+}
