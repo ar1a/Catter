@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@types/graphql": "^14.2.0",
+    "@types/jsonwebtoken": "^8.3.2",
     "nexus-prisma-generate": "^0.3.7",
     "ts-node": "^8.2.0",
     "ts-node-dev": "^1.0.0-pre.39",
