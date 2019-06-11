@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node index.ts",
-    "dev": "ts-node-dev --no-notify --respawn --transpileOnly ./"
+    "dev": "ts-node-dev --no-notify --respawn --transpileOnly ./",
+    "build": "tsc"
   },
   "dependencies": {
     "argon2": "^0.23.0",
