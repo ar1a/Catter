@@ -9,5 +9,6 @@ type User {
 type Meow {
   id: ID! @id
   content: String!
-  author: User @relation(link: INLINE)
+  author: User! @relation(link: INLINE)
+  createdAt: DateTime! @createdAt
 }

@@ -19,7 +19,7 @@
     "nexus-prisma-generate": "^0.3.7",
     "ts-node": "^8.2.0",
     "ts-node-dev": "^1.0.0-pre.39",
-    "typescript": "^3.5.1"
+    "typescript": "3.4"
   },
   "resolutions": {
     "graphql": "^14.3.1"

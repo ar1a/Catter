@@ -1,24 +1,43 @@
 import { prisma } from './generated/prisma-client';
+import datamodelInfo from './generated/nexus-prisma';
+import * as path from 'path';
+import { stringArg } from 'nexus';
+import { prismaObjectType, makePrismaSchema } from 'nexus-prisma';
+import { GraphQLServer } from 'graphql-yoga';
 
-async function main() {
-  const newUser = await prisma.createUser({
-    username: 'ar1a',
-    password: 'admin123',
-    meows: {
-      create: [
-        {
-          content: 'My first tweet!'
-        }
-      ]
-    }
-  });
-  console.log(`Created new user: ${newUser.username} (ID: ${newUser.id})`);
+const Query = prismaObjectType({
+  name: 'Query',
+  definition(t) {
+    t.prismaFields(['meow', 'user']);
+    t.list.field('feed', {
+      type: 'Meow',
+      resolve: (_, __, ctx) => ctx.prisma.meows()
+    });
+  }
+});
 
-  const allUsers = await prisma.users();
-  console.log(allUsers);
+const User = prismaObjectType({
+  name: 'User',
+  definition(t) {
+    t.prismaFields(['id', 'username', 'meows']);
+  }
+});
 
-  const allMeows = await prisma.meows();
-  console.log(allMeows);
-}
+const schema = makePrismaSchema({
+  types: [Query, User],
+  prisma: {
+    datamodelInfo,
+    client: prisma
+  },
+  outputs: {
+    schema: path.join(__dirname, './generated/schema.graphql'),
+    typegen: path.join(__dirname, './generated/nexus.ts')
+  }
+});
 
-main().catch(console.error);
+const server = new GraphQLServer({
+  schema,
+  context: { prisma }
+});
+
+server.start(() => console.log('Server running on http://localhost:4000'));
