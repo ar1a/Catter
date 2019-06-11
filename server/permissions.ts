@@ -1,4 +1,4 @@
-import { rule, shield } from 'graphql-shield';
+import { rule, shield, and } from 'graphql-shield';
 import { Context, getUserId } from './utils';
 
 const isAuthenticatedUser = rule()((_, __, ctx: Context) => {
@@ -13,12 +13,14 @@ const isMeowOwner = rule()(async (_, { id }, ctx: Context) => {
   return userId === author.id;
 });
 
+const isAuthenticatedAndOwnsMeow = and(isAuthenticatedUser, isMeowOwner);
+
 export default shield({
   Query: {
     me: isAuthenticatedUser
   },
   Mutation: {
     postMeow: isAuthenticatedUser,
-    deleteMeow: isMeowOwner
+    deleteMeow: isAuthenticatedAndOwnsMeow
   }
 });
