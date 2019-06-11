@@ -1,5 +1,5 @@
 import { prismaObjectType } from 'nexus-prisma';
-import { Context } from '../utils';
+import { Context, getUserId } from '../utils';
 
 export const Query = prismaObjectType({
   name: 'Query',
@@ -7,7 +7,16 @@ export const Query = prismaObjectType({
     t.prismaFields(['meow', 'user']);
     t.list.field('feed', {
       type: 'Meow',
-      resolve: (_, __, ctx: Context) => ctx.prisma.meows()
+      resolve: (_, __, ctx: Context) =>
+        ctx.prisma.meows({ orderBy: 'createdAt_DESC' })
+    });
+
+    t.field('me', {
+      type: 'User',
+      resolve: (_, __, ctx: Context) => {
+        const id = getUserId(ctx);
+        return ctx.prisma.user({ id });
+      }
     });
   }
 });

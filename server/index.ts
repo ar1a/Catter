@@ -5,6 +5,7 @@ import { stringArg } from 'nexus';
 import * as allTypes from './resolvers';
 import { prismaObjectType, makePrismaSchema } from 'nexus-prisma';
 import { GraphQLServer } from 'graphql-yoga';
+import permissions from './permissions';
 
 const schema = makePrismaSchema({
   types: allTypes,
@@ -20,7 +21,8 @@ const schema = makePrismaSchema({
 
 const server = new GraphQLServer({
   schema,
-  context: { prisma }
+  middlewares: [permissions],
+  context: request => ({ prisma, ...request })
 });
 
 server.start(() => console.log('Server running on http://localhost:4000'));

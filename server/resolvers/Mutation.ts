@@ -1,6 +1,6 @@
 import { prismaObjectType } from 'nexus-prisma';
 import { stringArg } from 'nexus';
-import { Context, APP_SECRET } from '../utils';
+import { Context, APP_SECRET, getUserId } from '../utils';
 import { hash, verify } from 'argon2';
 import { sign } from 'jsonwebtoken';
 
@@ -52,6 +52,20 @@ export const Mutation = prismaObjectType({
           token: sign({ userId: user.id }, APP_SECRET),
           user
         };
+      }
+    });
+
+    t.field('postMeow', {
+      type: 'Meow',
+      args: {
+        content: stringArg()
+      },
+      resolve: (_, { content }, ctx: Context) => {
+        const userId = getUserId(ctx);
+        return ctx.prisma.createMeow({
+          content,
+          author: { connect: { id: userId } }
+        });
       }
     });
   }
