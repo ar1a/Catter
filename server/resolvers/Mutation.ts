@@ -16,6 +16,7 @@ export const Mutation = prismaObjectType({
       resolve: async (_, { username, password }, ctx: Context) => {
         const hashedPassword = await hash(password);
         // TODO: zxcvbn password
+        // TODO: yup validation or something
         if (username.length < 3) {
           throw new Error('Username too short');
         }
