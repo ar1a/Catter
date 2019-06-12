@@ -11,10 +11,9 @@ export const Mutation = prismaObjectType({
       type: 'AuthPayload',
       args: {
         username: stringArg(),
-        email: stringArg({ nullable: true }),
         password: stringArg()
       },
-      resolve: async (_, { username, email, password }, ctx: Context) => {
+      resolve: async (_, { username, password }, ctx: Context) => {
         const hashedPassword = await hash(password);
         // TODO: zxcvbn password
         if (username.length < 3) {
@@ -26,7 +25,6 @@ export const Mutation = prismaObjectType({
         }
         const user = await ctx.prisma.createUser({
           username: username.toLowerCase(),
-          email,
           password: hashedPassword
         });
 
