@@ -2,7 +2,7 @@ import { Container, createMuiTheme, CssBaseline } from '@material-ui/core';
 import purple from '@material-ui/core/colors/purple';
 import { ThemeProvider } from '@material-ui/styles';
 import gql from 'graphql-tag';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { useQuery } from 'react-apollo-hooks';
 import {
   BrowserRouter as Router,
@@ -15,7 +15,7 @@ import { Header } from './Header';
 import './jost/jost.css';
 import { Login } from './Login';
 import { Logout } from './Logout';
-import { UserContext, IUserContext } from './State';
+import { IUserContext, UserContext } from './State';
 import { getfeed } from './types/getfeed';
 
 const theme = createMuiTheme({
@@ -65,7 +65,8 @@ const PrivateRoute: React.FC<
     component: any /*forgive me for i have sinned*/;
   } & RouteProps
 > = ({ component: Component, ...rest }) => {
-  const isAuthenticated = Boolean(localStorage.getItem('token')); // TODO: Use context
+  const { token } = useContext(UserContext);
+  const isAuthenticated = Boolean(token);
   return (
     <Route
       {...rest}

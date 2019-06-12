@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react';
-import gql from 'graphql-tag';
-import { useMutation } from 'react-apollo-hooks';
-import { login } from './types/login';
-import { Typography, Button, Container, TextField } from '@material-ui/core';
-import { Redirect } from 'react-router-dom';
+import { Button, Container, TextField, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
+import gql from 'graphql-tag';
+import React, { useContext, useState } from 'react';
+import { useMutation } from 'react-apollo-hooks';
+import { Redirect } from 'react-router-dom';
 import { UserContext } from './State';
+// eslint-disable-next-line
+import { login } from './types/login';
 
 const LOGIN = gql`
   mutation login($username: String!, $password: String!) {

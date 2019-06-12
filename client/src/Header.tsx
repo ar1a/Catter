@@ -1,8 +1,8 @@
 import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import React, { useContext } from 'react';
-import { AdapterLink } from './Utils';
 import { UserContext } from './State';
+import { AdapterLink } from './Utils';
 
 const useStyles = makeStyles(
   createStyles({
