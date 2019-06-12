@@ -14,6 +14,7 @@ import './App.css';
 import { Header } from './Header';
 import './jost/jost.css';
 import { Login } from './Login';
+import { Register } from './Register';
 import { Logout } from './Logout';
 import { IUserContext, UserContext } from './State';
 import { getfeed } from './types/getfeed';
@@ -102,6 +103,7 @@ const App: React.FC = () => {
           <Container>
             <Route path="/" exact component={Feed} />
             <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
             <PrivateRoute path="/logout" component={Logout} />
           </Container>
         </Router>

@@ -6,12 +6,12 @@ import { useMutation } from 'react-apollo-hooks';
 import { Redirect } from 'react-router-dom';
 import { UserContext } from './State';
 // eslint-disable-next-line
-import { login } from './types/login';
+import { register } from './types/register';
 import { AdapterLink } from './Utils';
 
-const LOGIN = gql`
-  mutation login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
+const REGISTER = gql`
+  mutation register($username: String!, $password: String!) {
+    signup(username: $username, password: $password) {
       token
       user {
         id
@@ -34,7 +34,7 @@ const useStyles = makeStyles(
   })
 );
 
-export const Login = () => {
+export const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -43,12 +43,12 @@ export const Login = () => {
 
   const classes = useStyles({});
 
-  const login = useMutation<login>(LOGIN, {
+  const register = useMutation<register>(REGISTER, {
     variables: { username, password },
-    update: (_proxy, result: { data: login }) => {
+    update: (_proxy, result: { data: register }) => {
       console.log(result);
-      localStorage.setItem('token', result.data.login.token);
-      setToken(result.data.login.token);
+      localStorage.setItem('token', result.data.signup.token);
+      setToken(result.data.signup.token);
       setRedirect(true);
     } // TODO: Move this to a .then in onSubmit?
   });
@@ -70,7 +70,7 @@ export const Login = () => {
     <Container maxWidth="xs">
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-          Login
+          Register
         </Typography>
         {error}
         {/* TODO: Make this error pretty */}
@@ -78,7 +78,7 @@ export const Login = () => {
           noValidate
           onSubmit={(event: React.ChangeEvent<HTMLFormElement>) => {
             event.preventDefault();
-            login().catch(e => {
+            register().catch(e => {
               setError(e.graphQLErrors[0].message);
             });
           }}
@@ -111,16 +111,16 @@ export const Login = () => {
             size="large"
             className={classes.submit}
           >
-            Login
+            Register
           </Button>
           <Button
             fullWidth
             variant="contained"
             color="secondary"
             component={AdapterLink}
-            to="/register"
+            to="/login"
           >
-            Register
+            Login
           </Button>
         </form>
       </div>

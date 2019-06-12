@@ -17,6 +17,13 @@ export const Mutation = prismaObjectType({
       resolve: async (_, { username, email, password }, ctx: Context) => {
         const hashedPassword = await hash(password);
         // TODO: zxcvbn password
+        if (username.length < 3) {
+          throw new Error('Username too short');
+        }
+
+        if (password.length < 8) {
+          throw new Error('Password too short');
+        }
         const user = await ctx.prisma.createUser({
           username: username.toLowerCase(),
           email,

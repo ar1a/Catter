@@ -21,7 +21,7 @@ export const Header = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Button color="inherit" component={AdapterLink} to="/">
+            <Button size="large" color="inherit" component={AdapterLink} to="/">
               Catter
             </Button>
           </Typography>
