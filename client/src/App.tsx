@@ -1,13 +1,20 @@
-import React from 'react';
-import { CssBaseline, Container, createMuiTheme } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/styles';
+import { Container, createMuiTheme, CssBaseline } from '@material-ui/core';
 import purple from '@material-ui/core/colors/purple';
+import { ThemeProvider } from '@material-ui/styles';
 import gql from 'graphql-tag';
+import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
-import { getfeed } from './types/getfeed';
-import { Header } from './Header';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  RouteProps
+} from 'react-router-dom';
 import './App.css';
+import { Header } from './Header';
 import './jost/jost.css';
+import { Login } from './Login';
+import { getfeed } from './types/getfeed';
 
 const theme = createMuiTheme({
   typography: {
@@ -51,14 +58,39 @@ const Feed = () => {
   );
 };
 
+const PrivateRoute: React.FC<
+  {
+    component: any /*forgive me for i have sinned*/;
+  } & RouteProps
+> = ({ component: Component, ...rest }) => {
+  const isAuthenticated = Boolean(localStorage.getItem('token'));
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        isAuthenticated ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{ pathname: '/login', state: { from: props.location } }}
+          />
+        )
+      }
+    />
+  );
+};
+
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Header />
-      <Container>
-        <Feed />
-      </Container>
+      <Router>
+        <CssBaseline />
+        <Header />
+        <Container>
+          <Route path="/" exact component={Feed} />
+          <Route path="/login" component={Login} />
+        </Container>
+      </Router>
     </ThemeProvider>
   );
 };

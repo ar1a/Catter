@@ -1,6 +1,7 @@
+import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/styles';
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button } from '@material-ui/core';
-import { makeStyles, createStyles } from '@material-ui/styles';
+import { AdapterLink } from './Utils';
 
 const useStyles = makeStyles(
   createStyles({
@@ -17,9 +18,13 @@ export const Header = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Catter
+            <Button color="inherit" component={AdapterLink} to="/">
+              Catter
+            </Button>
           </Typography>
-          <Button color="inherit">Login</Button>
+          <Button color="inherit" component={AdapterLink} to="/login">
+            login
+          </Button>
         </Toolbar>
       </AppBar>
     </div>
