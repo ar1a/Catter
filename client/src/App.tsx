@@ -21,7 +21,7 @@ const theme = createMuiTheme({
 });
 
 const GET_FEED = gql`
-  {
+  query getfeed {
     feed {
       id
       content
@@ -30,7 +30,7 @@ const GET_FEED = gql`
 `;
 
 const Feed = () => {
-  const { data, error, loading } = useQuery(GET_FEED);
+  const { data, error, loading } = useQuery(GET_FEED, { suspend: true });
   if (loading) {
     return <div>Loading...</div>;
   }
