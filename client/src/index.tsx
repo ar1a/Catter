@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -23,7 +23,9 @@ const client = new ApolloClient({
 
 const WrappedApp = () => (
   <ApolloProvider client={client}>
-    <App />
+    <Suspense fallback={<div>Loading...</div>}>
+      <App />
+    </Suspense>
   </ApolloProvider>
 );
 
