@@ -1,7 +1,8 @@
 import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
-import React from 'react';
+import React, { useContext } from 'react';
 import { AdapterLink } from './Utils';
+import { UserContext } from './State';
 
 const useStyles = makeStyles(
   createStyles({
@@ -13,6 +14,8 @@ const useStyles = makeStyles(
 
 export const Header = () => {
   const classes = useStyles({});
+  const { token } = useContext(UserContext);
+  const isAuthorized = Boolean(token);
   return (
     <div>
       <AppBar position="static">
@@ -22,9 +25,15 @@ export const Header = () => {
               Catter
             </Button>
           </Typography>
-          <Button color="inherit" component={AdapterLink} to="/login">
-            login
-          </Button>
+          {isAuthorized ? (
+            <Button color="inherit" component={AdapterLink} to="/logout">
+              logout
+            </Button>
+          ) : (
+            <Button color="inherit" component={AdapterLink} to="/login">
+              login
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </div>

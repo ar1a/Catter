@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import gql from 'graphql-tag';
 import { useMutation } from 'react-apollo-hooks';
 import { login } from './types/login';
 import { Typography, Button, Container, TextField } from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
 import { createStyles, makeStyles } from '@material-ui/styles';
+import { UserContext } from './State';
 
 const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
@@ -36,6 +37,7 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [redirect, setRedirect] = useState(false);
+  const { setToken } = useContext(UserContext);
 
   const classes = useStyles({});
 
@@ -44,8 +46,9 @@ export const Login = () => {
     update: (_proxy, result: { data: login }) => {
       console.log(result);
       localStorage.setItem('token', result.data.login.token);
+      setToken(result.data.login.token);
       setRedirect(true);
-    }
+    } // TODO: Move this to a .then in onSubmit?
   });
 
   if (redirect) {

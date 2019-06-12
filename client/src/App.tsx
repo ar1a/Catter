@@ -2,7 +2,7 @@ import { Container, createMuiTheme, CssBaseline } from '@material-ui/core';
 import purple from '@material-ui/core/colors/purple';
 import { ThemeProvider } from '@material-ui/styles';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useQuery } from 'react-apollo-hooks';
 import {
   BrowserRouter as Router,
@@ -14,6 +14,8 @@ import './App.css';
 import { Header } from './Header';
 import './jost/jost.css';
 import { Login } from './Login';
+import { Logout } from './Logout';
+import { UserContext, IUserContext } from './State';
 import { getfeed } from './types/getfeed';
 
 const theme = createMuiTheme({
@@ -63,7 +65,7 @@ const PrivateRoute: React.FC<
     component: any /*forgive me for i have sinned*/;
   } & RouteProps
 > = ({ component: Component, ...rest }) => {
-  const isAuthenticated = Boolean(localStorage.getItem('token'));
+  const isAuthenticated = Boolean(localStorage.getItem('token')); // TODO: Use context
   return (
     <Route
       {...rest}
@@ -81,16 +83,28 @@ const PrivateRoute: React.FC<
 };
 
 const App: React.FC = () => {
+  const setToken = useCallback(token => {
+    setUserState(u => ({ ...u, token }));
+  }, []);
+
+  const [userState, setUserState] = useState<IUserContext>({
+    token: localStorage.getItem('token'),
+    setToken
+  });
+
   return (
     <ThemeProvider theme={theme}>
-      <Router>
-        <CssBaseline />
-        <Header />
-        <Container>
-          <Route path="/" exact component={Feed} />
-          <Route path="/login" component={Login} />
-        </Container>
-      </Router>
+      <UserContext.Provider value={userState}>
+        <Router>
+          <CssBaseline />
+          <Header />
+          <Container>
+            <Route path="/" exact component={Feed} />
+            <Route path="/login" component={Login} />
+            <PrivateRoute path="/logout" component={Logout} />
+          </Container>
+        </Router>
+      </UserContext.Provider>
     </ThemeProvider>
   );
 };
