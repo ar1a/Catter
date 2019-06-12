@@ -5,6 +5,7 @@ import purple from '@material-ui/core/colors/purple';
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo-hooks';
 import { getfeed } from './types/getfeed';
+import { Header } from './Header';
 import './App.css';
 import './jost/jost.css';
 
@@ -54,6 +55,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <Header />
       <Container>
         <Feed />
       </Container>
