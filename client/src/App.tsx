@@ -4,6 +4,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import purple from '@material-ui/core/colors/purple';
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo-hooks';
+import { getfeed } from './types/getfeed';
 import './App.css';
 import './jost/jost.css';
 
@@ -30,7 +31,9 @@ const GET_FEED = gql`
 `;
 
 const Feed = () => {
-  const { data, error, loading } = useQuery(GET_FEED, { suspend: true });
+  const { data, error, loading } = useQuery<getfeed>(GET_FEED, {
+    suspend: true
+  });
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -40,7 +43,7 @@ const Feed = () => {
 
   return (
     <ul>
-      {data.feed.map((meow: any) => (
+      {data!.feed.map((meow: any) => (
         <li key={meow.id}>{meow.content}</li>
       ))}
     </ul>
