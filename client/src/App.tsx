@@ -1,7 +1,12 @@
-import { Container, createMuiTheme, CssBaseline } from '@material-ui/core';
+import {
+  Container,
+  createMuiTheme,
+  CssBaseline,
+  CircularProgress
+} from '@material-ui/core';
 import purple from '@material-ui/core/colors/purple';
-import { ThemeProvider } from '@material-ui/styles';
-import React, { useCallback, useContext, useState } from 'react';
+import { ThemeProvider, makeStyles, createStyles } from '@material-ui/styles';
+import React, { useCallback, useContext, useState, Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Redirect,
@@ -71,17 +76,39 @@ const App: React.FC = () => {
         <Router>
           <CssBaseline />
           <Header />
-          <Container style={{ paddingTop: 16 }}>
-            <Route path="/" exact component={Feed} />
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
-            <Route path="/:username/:id" component={SingleMeow} />
-            <Route path="/:username" exact component={User} />
-            <PrivateRoute path="/logout" component={Logout} />
-          </Container>
+          <Suspense fallback={<Loader />}>
+            <Container style={{ paddingTop: 16 }}>
+              <Route path="/" exact component={Feed} />
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
+              <Route path="/:username/:id" component={SingleMeow} />
+              <Route path="/:username" exact component={User} />
+              <PrivateRoute path="/logout" component={Logout} />
+            </Container>
+          </Suspense>
         </Router>
       </UserContext.Provider>
     </ThemeProvider>
+  );
+};
+
+const useStyles = makeStyles(
+  createStyles({
+    container: {
+      display: 'flex',
+      width: '100%',
+      justifyContent: 'center',
+      padding: 16
+    }
+  })
+);
+
+const Loader = () => {
+  const classes = useStyles({});
+  return (
+    <div className={classes.container}>
+      <CircularProgress />
+    </div>
   );
 };
 

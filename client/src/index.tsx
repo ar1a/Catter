@@ -22,9 +22,7 @@ const client = new ApolloClient({
 
 const WrappedApp = () => (
   <ApolloProvider client={client}>
-    <Suspense fallback={<div>Loading...</div>}>
-      <App />
-    </Suspense>
+    <App />
   </ApolloProvider>
 );
 
