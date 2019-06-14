@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import {
   Card,
   CardContent,
@@ -12,8 +12,6 @@ import useForm from 'react-hook-form';
 import gql from 'graphql-tag';
 import { postmeow } from './types/postmeow';
 import { useMutation } from 'react-apollo-hooks';
-import { OnSubmit } from 'react-hook-form/dist/types';
-import { Redirect } from 'react-router';
 
 const useStyles = makeStyles(
   createStyles({

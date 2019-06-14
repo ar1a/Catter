@@ -1,5 +1,5 @@
 import ApolloClient from 'apollo-boost';
-import React, { Suspense } from 'react';
+import React from 'react';
 import { ApolloProvider } from 'react-apollo-hooks';
 import ReactDOM from 'react-dom';
 import App from './App';
