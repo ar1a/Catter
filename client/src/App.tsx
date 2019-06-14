@@ -4,14 +4,15 @@ import {
   CssBaseline,
   CircularProgress
 } from '@material-ui/core';
-import purple from '@material-ui/core/colors/purple';
+import teal from '@material-ui/core/colors/teal';
 import { ThemeProvider, makeStyles, createStyles } from '@material-ui/styles';
 import React, { useCallback, useContext, useState, Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Redirect,
   Route,
-  RouteProps
+  RouteProps,
+  Switch
 } from 'react-router-dom';
 import './App.css';
 import { Header } from './Header';
@@ -30,7 +31,7 @@ const theme = createMuiTheme({
   },
   palette: {
     type: 'dark',
-    primary: purple,
+    primary: teal,
     secondary: {
       main: '#f44336'
     }
@@ -78,12 +79,14 @@ const App: React.FC = () => {
           <Header />
           <Suspense fallback={<Loader />}>
             <Container style={{ paddingTop: 16 }}>
-              <Route path="/" exact component={Feed} />
-              <Route path="/login" component={Login} />
-              <Route path="/register" component={Register} />
-              <Route path="/:username/:id" component={SingleMeow} />
-              <Route path="/:username" exact component={User} />
-              <PrivateRoute path="/logout" component={Logout} />
+              <Switch>
+                <Route path="/" exact component={Feed} />
+                <Route path="/login" component={Login} />
+                <Route path="/register" component={Register} />
+                <Route path="/:username/:id" component={SingleMeow} />
+                <Route path="/:username" component={User} />
+                <PrivateRoute path="/logout" component={Logout} />
+              </Switch>
             </Container>
           </Suspense>
         </Router>
