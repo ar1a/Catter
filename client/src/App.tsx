@@ -71,12 +71,12 @@ const App: React.FC = () => {
         <Router>
           <CssBaseline />
           <Header />
-          <Container>
+          <Container style={{ paddingTop: 16 }}>
             <Route path="/" exact component={Feed} />
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
             <Route path="/:username/:id" component={SingleMeow} />
-            <Route path="/:username" component={User} />
+            <Route path="/:username" exact component={User} />
             <PrivateRoute path="/logout" component={Logout} />
           </Container>
         </Router>

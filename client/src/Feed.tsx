@@ -30,10 +30,10 @@ export const Feed = () => {
   }
 
   return (
-    <ul>
+    <>
       {data.feed.map((meow: getfeed_feed) => (
         <Meow key={meow.id} meow={meow} />
       ))}
-    </ul>
+    </>
   );
 };

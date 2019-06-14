@@ -25,7 +25,7 @@ const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
 const useStyles = makeStyles(
   createStyles({
     card: {
-      margin: '16px 0'
+      margin: '0 0 16px'
     }
   })
 );
@@ -33,13 +33,15 @@ const useStyles = makeStyles(
 export const Meow: React.FC<{
   meow: { id: string; content: string; author: { username: string } };
   noRedirect?: boolean;
+  noUserRedirect?: boolean;
 }> = ({
   meow: {
     id,
     content,
     author: { username }
   },
-  noRedirect
+  noRedirect,
+  noUserRedirect
 }) => {
   const classes = useStyles();
 
@@ -51,8 +53,11 @@ export const Meow: React.FC<{
       return <Redirect to={`/${username}/${id}`} />;
     }
   }
-  if (toUser) {
-    return <Redirect to={`/${username}`} />;
+
+  if (!noUserRedirect) {
+    if (toUser) {
+      return <Redirect to={`/${username}`} />;
+    }
   }
   return (
     <Card className={classes.card} onClick={onCardClick}>
@@ -93,8 +98,12 @@ export const SingleMeow: React.FC<RouteComponentProps<Props>> = ({ match }) => {
     return <div>Error! {error.message}</div>;
   }
 
-  if (!data || !data.meow) {
+  if (!data) {
     return <div>Unreachable error! Please report. id: 1</div>;
+  }
+
+  if (!data.meow) {
+    return <div>Meow not found!</div>;
   }
 
   return <Meow meow={data.meow} noRedirect />;
