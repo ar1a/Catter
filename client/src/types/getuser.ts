@@ -22,7 +22,7 @@ export interface getuser_user_meows {
 export interface getuser_user {
   __typename: "User";
   id: string;
-  meows: getuser_user_meows[] | null;
+  meows: getuser_user_meows[];
 }
 
 export interface getuser {

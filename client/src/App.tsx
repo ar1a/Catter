@@ -81,11 +81,11 @@ const App: React.FC = () => {
             <Container style={{ paddingTop: 16 }}>
               <Switch>
                 <Route path="/" exact component={Feed} />
+                <PrivateRoute path="/logout" component={Logout} />
                 <Route path="/login" component={Login} />
                 <Route path="/register" component={Register} />
                 <Route path="/:username/:id" component={SingleMeow} />
                 <Route path="/:username" component={User} />
-                <PrivateRoute path="/logout" component={Logout} />
               </Switch>
             </Container>
           </Suspense>
