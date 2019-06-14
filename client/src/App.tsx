@@ -1,9 +1,7 @@
 import { Container, createMuiTheme, CssBaseline } from '@material-ui/core';
 import purple from '@material-ui/core/colors/purple';
 import { ThemeProvider } from '@material-ui/styles';
-import gql from 'graphql-tag';
 import React, { useCallback, useContext, useState } from 'react';
-import { useQuery } from 'react-apollo-hooks';
 import {
   BrowserRouter as Router,
   Redirect,
@@ -17,7 +15,9 @@ import { Login } from './Login';
 import { Register } from './Register';
 import { Logout } from './Logout';
 import { IUserContext, UserContext } from './State';
-import { getfeed } from './types/getfeed';
+import { Feed } from './Feed';
+import { SingleMeow } from './Meow';
+import { User } from './User';
 
 const theme = createMuiTheme({
   typography: {
@@ -31,35 +31,6 @@ const theme = createMuiTheme({
     }
   }
 });
-
-const GET_FEED = gql`
-  query getfeed {
-    feed {
-      id
-      content
-    }
-  }
-`;
-
-const Feed = () => {
-  const { data, error, loading } = useQuery<getfeed>(GET_FEED, {
-    suspend: true
-  });
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error! {error.message}</div>;
-  }
-
-  return (
-    <ul>
-      {data!.feed.map((meow: any) => (
-        <li key={meow.id}>{meow.content}</li>
-      ))}
-    </ul>
-  );
-};
 
 const PrivateRoute: React.FC<
   {
@@ -104,6 +75,8 @@ const App: React.FC = () => {
             <Route path="/" exact component={Feed} />
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
+            <Route path="/:username/:id" component={SingleMeow} />
+            <Route path="/:username" component={User} />
             <PrivateRoute path="/logout" component={Logout} />
           </Container>
         </Router>
