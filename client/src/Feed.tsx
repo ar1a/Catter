@@ -5,6 +5,7 @@ import { useQuery } from 'react-apollo-hooks';
 import { Meow } from './Meow';
 import { CreateMeow } from './CreateMeow';
 import { UserContext } from './State';
+import { Loader } from './Loader';
 
 const GET_FEED = gql`
   query getfeed {
@@ -20,12 +21,14 @@ const GET_FEED = gql`
 `;
 
 export const Feed = () => {
-  const { data, error } = useQuery<getfeed>(GET_FEED, {
-    suspend: true
-  });
+  const { data, error, loading } = useQuery<getfeed>(GET_FEED);
 
   const { token } = useContext(UserContext);
   const loggedIn = Boolean(token);
+  if (loading) {
+    return <Loader />;
+  }
+
   if (error) {
     return <div>Error! {error.message}</div>;
   }

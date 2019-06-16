@@ -10,6 +10,7 @@ import { Redirect, RouteComponentProps } from 'react-router';
 import gql from 'graphql-tag';
 import { getmeow } from './types/getmeow';
 import { useQuery } from 'react-apollo-hooks';
+import { Loader } from './Loader';
 
 const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
   const [toMeow, setToMeow] = useState(false);
@@ -90,10 +91,14 @@ interface Props {
 }
 
 export const SingleMeow: React.FC<RouteComponentProps<Props>> = ({ match }) => {
-  const { data, error } = useQuery<getmeow>(GET_MEOW, {
-    suspend: true,
+  const { data, error, loading } = useQuery<getmeow>(GET_MEOW, {
     variables: { id: match.params.id }
   });
+
+  if (loading) {
+    return <Loader />;
+  }
+
   if (error) {
     return <div>Error! {error.message}</div>;
   }

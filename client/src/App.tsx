@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core';
 import teal from '@material-ui/core/colors/teal';
 import { ThemeProvider, makeStyles, createStyles } from '@material-ui/styles';
-import React, { useCallback, useContext, useState, Suspense } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import {
   BrowserRouter as Router,
   Redirect,
@@ -77,41 +77,19 @@ const App: React.FC = () => {
         <Router>
           <CssBaseline />
           <Header />
-          <Suspense fallback={<Loader />}>
-            <Container style={{ paddingTop: 16 }}>
-              <Switch>
-                <Route path="/" exact component={Feed} />
-                <PrivateRoute path="/logout" component={Logout} />
-                <Route path="/login" component={Login} />
-                <Route path="/register" component={Register} />
-                <Route path="/:username/:id" component={SingleMeow} />
-                <Route path="/:username" component={User} />
-              </Switch>
-            </Container>
-          </Suspense>
+          <Container style={{ paddingTop: 16 }}>
+            <Switch>
+              <Route path="/" exact component={Feed} />
+              <PrivateRoute path="/logout" component={Logout} />
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
+              <Route path="/:username/:id" component={SingleMeow} />
+              <Route path="/:username" component={User} />
+            </Switch>
+          </Container>
         </Router>
       </UserContext.Provider>
     </ThemeProvider>
-  );
-};
-
-const useStyles = makeStyles(
-  createStyles({
-    container: {
-      display: 'flex',
-      width: '100%',
-      justifyContent: 'center',
-      padding: 16
-    }
-  })
-);
-
-const Loader = () => {
-  const classes = useStyles({});
-  return (
-    <div className={classes.container}>
-      <CircularProgress />
-    </div>
   );
 };
 

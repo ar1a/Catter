@@ -6,6 +6,7 @@ import { RouteComponentProps } from 'react-router';
 import { Grid, Card, CardContent, Typography } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/styles';
 import { Meow } from './Meow';
+import { Loader } from './Loader';
 
 const GET_USER = gql`
   query getuser($username: String!) {
@@ -37,10 +38,13 @@ export const User: React.FC<RouteComponentProps<{ username: string }>> = ({
   }
 }) => {
   const classes = useStyles({});
-  const { data, error } = useQuery<getuser>(GET_USER, {
-    suspend: true,
+  const { data, error, loading } = useQuery<getuser>(GET_USER, {
     variables: { username }
   });
+
+  if (loading) {
+    return <Loader />;
+  }
 
   if (error) {
     return <div>An error occured! {error.message}</div>;
