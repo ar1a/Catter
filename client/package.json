@@ -18,7 +18,7 @@
     "react-dom": "^16.8.6",
     "react-hook-form": "^3.11.3",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "3.0.1",
+    "wonky-scripts": "^0.0.5",
     "typescript": "3.5.1"
   },
   "scripts": {
