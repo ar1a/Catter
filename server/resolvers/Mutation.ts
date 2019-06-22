@@ -3,6 +3,7 @@ import { stringArg, idArg } from 'nexus';
 import { Context, APP_SECRET, getUserId } from '../utils';
 import { hash, verify } from 'argon2';
 import { sign } from 'jsonwebtoken';
+import { validate } from 'the-big-username-blacklist';
 
 export const Mutation = prismaObjectType({
   name: 'Mutation',
@@ -20,9 +21,11 @@ export const Mutation = prismaObjectType({
         if (username.length < 3) {
           throw new Error('Username too short');
         }
-
         if (password.length < 8) {
           throw new Error('Password too short');
+        }
+        if (!validate(username)) {
+          throw new Error('Username is in blacklist');
         }
         const user = await ctx.prisma.createUser({
           username: username.toLowerCase(),

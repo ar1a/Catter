@@ -1943,6 +1943,11 @@ synchronous-promise@^2.0.6:
   resolved "https://registry.yarnpkg.com/synchronous-promise/-/synchronous-promise-2.0.9.tgz#b83db98e9e7ae826bf9c8261fd8ac859126c780a"
   integrity sha512-LO95GIW16x69LuND1nuuwM4pjgFGupg7pZ/4lU86AmchPKrhk0o2tpMU2unXRrqo81iAFe1YJ0nAGEVwsrZAgg==
 
+the-big-username-blacklist@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/the-big-username-blacklist/-/the-big-username-blacklist-1.5.2.tgz#0a4e88fe636e39552c9306b72e7722c99b6eece6"
+  integrity sha512-bKRIZbu3AoDhEkjNcErodWLpR18vZQQqg9DEab/zELgGw++M1x0KBeTGdoEPHPw0ghmx1jf/B6kZKuwDDPhGBQ==
+
 toidentifier@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.0.tgz#7e1be3470f1e77948bc43d94a3c8f4d7752ba553"
