@@ -11,6 +11,7 @@ import gql from 'graphql-tag';
 import { getmeow } from './types/getmeow';
 import { useQuery } from 'react-apollo-hooks';
 import { Loader } from './Loader';
+import { fade } from '@material-ui/core/styles';
 
 const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
   const [toMeow, setToMeow] = useState(false);
@@ -23,10 +24,26 @@ const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
   return [toMeow, onCardClick];
 };
 
-const useStyles = makeStyles(
+const useStyles = makeStyles(theme =>
   createStyles({
     card: {
-      margin: '0 0 16px'
+      margin: '0 0 16px',
+      '&:hover': {
+        backgroundColor: fade(
+          theme.palette.text.primary,
+          theme.palette.action.hoverOpacity
+        ),
+        cursor: 'pointer'
+      }
+    },
+    username: {
+      '&:hover': {
+        backgroundColor: fade(
+          theme.palette.text.primary,
+          theme.palette.action.hoverOpacity
+        ),
+        cursor: 'pointer'
+      }
     }
   })
 );
@@ -63,7 +80,12 @@ export const Meow: React.FC<{
   return (
     <Card className={classes.card} onClick={onCardClick}>
       <CardContent>
-        <Typography color="textSecondary" gutterBottom onClick={onUserClick}>
+        <Typography
+          color="textSecondary"
+          gutterBottom
+          onClick={onUserClick}
+          className={classes.username}
+        >
           {username}
         </Typography>
         {content}
