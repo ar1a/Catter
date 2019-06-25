@@ -1,11 +1,6 @@
-import {
-  Container,
-  createMuiTheme,
-  CssBaseline,
-  CircularProgress
-} from '@material-ui/core';
+import { Container, createMuiTheme, CssBaseline } from '@material-ui/core';
 import teal from '@material-ui/core/colors/teal';
-import { ThemeProvider, makeStyles, createStyles } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import React, { useCallback, useContext, useState } from 'react';
 import {
   BrowserRouter as Router,
@@ -18,7 +13,6 @@ import './App.css';
 import { Header } from './Header';
 import './jost/jost.css';
 import { Login } from './Login';
-import { Register } from './Register';
 import { Logout } from './Logout';
 import { IUserContext, UserContext } from './State';
 import { Feed } from './Feed';
@@ -82,7 +76,6 @@ const App: React.FC = () => {
               <Route path="/" exact component={Feed} />
               <PrivateRoute path="/logout" component={Logout} />
               <Route path="/login" component={Login} />
-              <Route path="/register" component={Register} />
               <Route path="/:username/:id" component={SingleMeow} />
               <Route path="/:username" component={User} />
             </Switch>

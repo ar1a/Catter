@@ -1,18 +1,29 @@
 import { Button, Container, TextField, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import gql from 'graphql-tag';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import { useMutation } from 'react-apollo-hooks';
 import { Redirect } from 'react-router-dom';
 import { UserContext } from './State';
 // eslint-disable-next-line
 import { login } from './types/login';
-import { AdapterLink } from './Utils';
+import { register as REGISTER_TYPE } from './types/register';
 import useForm from 'react-hook-form';
 
 const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
+      token
+      user {
+        id
+      }
+    }
+  }
+`;
+
+const REGISTER = gql`
+  mutation register($username: String!, $password: String!) {
+    signup(username: $username, password: $password) {
       token
       user {
         id
@@ -42,22 +53,43 @@ interface Data {
 
 export const Login = () => {
   const { register, handleSubmit, errors } = useForm<Data>();
-  const classes = useStyles();
+  const classes = useStyles({});
   const login = useMutation<login>(LOGIN);
+  const doRegister = useMutation<REGISTER_TYPE>(REGISTER);
   const [redirect, setRedirect] = useState(false);
+  const [error, setError] = useState('');
+  const [isRegister, setRegister] = useState(false);
   const { setToken } = useContext(UserContext);
 
-  const onSubmit = async ({ username, password }: Data) => {
-    try {
-      const result = await login({ variables: { username, password } });
-      console.log(result);
-      localStorage.setItem('token', result.data.login.token);
-      setToken(result.data.login.token);
-      setRedirect(true);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  const onSubmit = useCallback(
+    async ({ username, password }: Data) => {
+      try {
+        if (isRegister) {
+          const result: { data: REGISTER_TYPE } = await doRegister({
+            variables: { username, password }
+          });
+          localStorage.setItem('token', result.data.signup.token);
+          setToken(result.data.signup.token);
+          setRedirect(true);
+        } else {
+          const result: { data: login } = await login({
+            variables: { username, password }
+          });
+          localStorage.setItem('token', result.data.login.token);
+          setToken(result.data.login.token);
+          setRedirect(true);
+        }
+      } catch (e) {
+        setError(e.graphQLErrors[0].message);
+      }
+    },
+    [login, setToken, isRegister, doRegister]
+  );
+
+  const onClick = useCallback(() => setRegister(!isRegister), [
+    isRegister,
+    setRegister
+  ]);
 
   if (redirect) {
     return <Redirect to="/" />;
@@ -66,8 +98,11 @@ export const Login = () => {
   return (
     <Container maxWidth="xs">
       <div className={classes.paper}>
-        <Typography component="h1" variant="h5">
-          Login
+        <Typography variant="h4" gutterBottom>
+          {(isRegister && 'Register') || 'Login'}
+        </Typography>
+        <Typography variant="subtitle1" color="error" gutterBottom>
+          {error}
         </Typography>
         <form noValidate onSubmit={handleSubmit(onSubmit)}>
           <TextField
@@ -100,16 +135,15 @@ export const Login = () => {
             size="large"
             className={classes.submit}
           >
-            Login
+            {(isRegister && 'Register') || 'Login'}
           </Button>
           <Button
             fullWidth
             variant="contained"
             color="secondary"
-            component={AdapterLink}
-            to="/register"
+            onClick={onClick}
           >
-            Register
+            {(isRegister && 'Login') || 'Register'}
           </Button>
         </form>
       </div>
