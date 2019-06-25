@@ -5,6 +5,24 @@ import { hash, verify } from 'argon2';
 import { sign } from 'jsonwebtoken';
 import { validate } from 'the-big-username-blacklist';
 import * as zxcvbn from 'zxcvbn';
+import * as yup from 'yup';
+
+const signupSchema = yup.object().shape({
+  username: yup
+    .string()
+    .required()
+    .lowercase()
+    .trim()
+    .min(3)
+    .max(20)
+    .matches(/^[a-zA-Z0-9]+$/, { message: '${path} must be alphanumeric' })
+    .test({
+      name: 'blacklisted',
+      test: validate,
+      message: '${path} is in blacklist'
+    }),
+  password: yup.string().required()
+});
 
 export const Mutation = prismaObjectType({
   name: 'Mutation',
@@ -15,20 +33,11 @@ export const Mutation = prismaObjectType({
         username: stringArg(),
         password: stringArg()
       },
-      resolve: async (_, { username, password }, ctx: Context) => {
-        const hashedPassword = await hash(password);
-        const fixedUsername = username.trim().toLowerCase();
-        // TODO: zxcvbn password
-        // TODO: yup validation or something
-        if (fixedUsername.length < 3) {
-          throw new Error('Username too short (< 3)');
-        }
+      resolve: async (_, args, ctx: Context) => {
+        const { username, password } = await signupSchema.validate(args);
+        console.log(username, password);
 
-        if (fixedUsername.length > 20) {
-          throw new Error('Username too long (> 20)');
-        }
-
-        const zxcvbnResults = zxcvbn(password, [fixedUsername]);
+        const zxcvbnResults = zxcvbn(password, [username]);
         if (zxcvbnResults.score < 3) {
           let suggestions = '';
           if (zxcvbnResults.feedback.suggestions) {
@@ -42,11 +51,10 @@ export const Mutation = prismaObjectType({
             warning = zxcvbnResults.feedback.warning + '.';
           throw new Error(`Password too weak. ${warning} ${suggestions}`);
         }
-        if (!validate(fixedUsername)) {
-          throw new Error('Username is in blacklist');
-        }
+
+        const hashedPassword = await hash(password);
         const user = await ctx.prisma.createUser({
-          username: fixedUsername,
+          username,
           password: hashedPassword
         });
 
