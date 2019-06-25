@@ -1,4 +1,10 @@
-import { Button, Container, TextField, Typography } from '@material-ui/core';
+import {
+  Button,
+  Container,
+  TextField,
+  Typography,
+  InputAdornment
+} from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import gql from 'graphql-tag';
 import React, { useContext, useState, useCallback } from 'react';
@@ -114,6 +120,11 @@ export const Login = () => {
             error={Boolean(errors.username)}
             name="username"
             inputRef={register({ required: true })}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">@</InputAdornment>
+              )
+            }}
             variant="outlined"
           />
           <TextField
