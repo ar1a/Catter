@@ -16,6 +16,7 @@ import { useQuery, useMutation } from 'react-apollo-hooks';
 import { Loader } from './Loader';
 import { fade } from '@material-ui/core/styles';
 import { useUserState } from './UserState';
+import { AdapterLink } from './Utils';
 
 const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
   const [toMeow, setToMeow] = useState(false);
@@ -72,22 +73,19 @@ export const Meow: React.FC<{
 
   const [toMeow, onCardClick] = useMeowRedirect();
   const [toUser, onUserClick] = useMeowRedirect();
-  const [deleted, setDeleted] = useState(false);
   const myUsername = useUserState('username');
   const deleteMeow = useMutation<deletemeow>(DELETE_MEOW, {
     variables: { id },
-    refetchQueries: ['getuser', 'getfeed']
+    refetchQueries: ['getmeow']
   });
 
-  const onDeleteClick = useCallback(async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    await deleteMeow();
-    setDeleted(true);
-  }, []);
-
-  if (deleted) {
-    return <Redirect to={`/${username}`} />;
-  }
+  const onDeleteClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      deleteMeow();
+    },
+    [deleteMeow]
+  );
 
   if (!noRedirect) {
     if (toMeow) {
@@ -157,8 +155,9 @@ interface Props {
 
 export const SingleMeow: React.FC<RouteComponentProps<Props>> = ({ match }) => {
   const { data, error, loading } = useQuery<getmeow>(GET_MEOW, {
-    variables: { id: match.params.id }
-  });
+    variables: { id: match.params.id },
+    fetchPolicy: 'cache-and-network'
+  } as any);
 
   if (loading) {
     return <Loader />;
@@ -173,7 +172,18 @@ export const SingleMeow: React.FC<RouteComponentProps<Props>> = ({ match }) => {
   }
 
   if (!data.meow) {
-    return <div>Meow not found!</div>;
+    return (
+      <div>
+        Meow not found!{' '}
+        <Button
+          color="inherit"
+          component={AdapterLink}
+          to={`/${match.params.username}`}
+        >
+          To Profile
+        </Button>
+      </div>
+    );
   }
 
   return <Meow meow={data.meow} noRedirect />;

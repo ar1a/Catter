@@ -21,7 +21,9 @@ const GET_FEED = gql`
 `;
 
 export const Feed = () => {
-  const { data, error, loading } = useQuery<getfeed>(GET_FEED);
+  const { data, error, loading } = useQuery<getfeed>(GET_FEED, {
+    fetchPolicy: 'cache-and-network'
+  } as any);
 
   const token = useUserState('token');
   const loggedIn = Boolean(token);

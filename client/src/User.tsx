@@ -40,8 +40,9 @@ export const User: React.FC<RouteComponentProps<{ username: string }>> = ({
 }) => {
   const classes = useStyles({});
   const { data, error, loading } = useQuery<getuser>(GET_USER, {
-    variables: { username }
-  });
+    variables: { username },
+    fetchPolicy: 'cache-and-network'
+  } as any);
 
   if (loading) {
     return <Loader />;
