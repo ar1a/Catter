@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -16,7 +16,7 @@ import { useMutation } from 'react-apollo-hooks';
 const useStyles = makeStyles(
   createStyles({
     card: {
-      margin: '0 0 16px'
+      marginBottom: 16
     }
   })
 );
@@ -40,14 +40,22 @@ interface Data {
 export const CreateMeow = () => {
   const classes = useStyles();
 
-  const { register, handleSubmit, errors } = useForm<Data>();
+  const { register, handleSubmit, errors, reset } = useForm<Data>();
   const postMeow = useMutation<postmeow>(POST_MEOW, {
     refetchQueries: ['getfeed']
   });
 
-  const onSubmit = (data: Data) => {
-    postMeow({ variables: { content: data.content } }).catch(console.error);
-  };
+  const onSubmit = useCallback(
+    async (data: Data) => {
+      try {
+        await postMeow({ variables: { content: data.content } });
+        reset();
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [postMeow, reset]
+  );
 
   return (
     <Card className={classes.card}>
