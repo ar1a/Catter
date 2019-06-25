@@ -69,10 +69,11 @@ export const Login = () => {
         <Typography component="h1" variant="h5">
           Login
         </Typography>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form noValidate onSubmit={handleSubmit(onSubmit)}>
           <TextField
-            label="Username *"
+            label="Username"
             margin="normal"
+            required
             fullWidth
             autoFocus
             error={Boolean(errors.username)}
@@ -81,7 +82,8 @@ export const Login = () => {
             variant="outlined"
           />
           <TextField
-            label="Password *"
+            label="Password"
+            required
             name="password"
             margin="normal"
             fullWidth
