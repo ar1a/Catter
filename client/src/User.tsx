@@ -7,6 +7,7 @@ import { Grid, Card, CardContent, Typography } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/styles';
 import { Meow } from './Meow';
 import { Loader } from './Loader';
+import ReactFitText from 'react-fittext';
 
 const GET_USER = gql`
   query getuser($username: String!) {
@@ -61,9 +62,11 @@ export const User: React.FC<RouteComponentProps<{ username: string }>> = ({
       <Grid item xs={12} md={4}>
         <Card>
           <CardContent>
-            <Typography variant="h3" className={classes.username}>
-              {username}
-            </Typography>
+            <ReactFitText>
+              <Typography variant="h3" className={classes.username}>
+                {username}
+              </Typography>
+            </ReactFitText>
           </CardContent>
         </Card>
       </Grid>
