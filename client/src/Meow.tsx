@@ -76,7 +76,7 @@ export const Meow: React.FC<{
   const myUsername = useUserState('username');
   const deleteMeow = useMutation<deletemeow>(DELETE_MEOW, {
     variables: { id },
-    refetchQueries: ['getmeow']
+    refetchQueries: ['getmeow', 'getuser', 'getfeed']
   });
 
   const onDeleteClick = useCallback(
