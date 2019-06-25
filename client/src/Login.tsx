@@ -8,6 +8,7 @@ import { UserContext } from './State';
 // eslint-disable-next-line
 import { login } from './types/login';
 import { AdapterLink } from './Utils';
+import useForm from 'react-hook-form';
 
 const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
@@ -34,37 +35,33 @@ const useStyles = makeStyles(
   })
 );
 
+interface Data {
+  username: string;
+  password: string;
+}
+
 export const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const { register, handleSubmit, errors } = useForm<Data>();
+  const classes = useStyles();
+  const login = useMutation<login>(LOGIN);
   const [redirect, setRedirect] = useState(false);
   const { setToken } = useContext(UserContext);
 
-  const classes = useStyles({});
-
-  const login = useMutation<login>(LOGIN, {
-    variables: { username, password },
-    update: (_proxy, result: { data: login }) => {
+  const onSubmit = async ({ username, password }: Data) => {
+    try {
+      const result = await login({ variables: { username, password } });
       console.log(result);
       localStorage.setItem('token', result.data.login.token);
       setToken(result.data.login.token);
       setRedirect(true);
-    } // TODO: Move this to a .then in onSubmit?
-  });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   if (redirect) {
     return <Redirect to="/" />;
   }
-
-  // Disgusting code repetition
-  const handleUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
-  };
-
-  const handlePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
 
   return (
     <Container maxWidth="xs">
@@ -72,35 +69,25 @@ export const Login = () => {
         <Typography component="h1" variant="h5">
           Login
         </Typography>
-        {error}
-        {/* TODO: Make this error pretty */}
-        <form
-          noValidate
-          onSubmit={(event: React.ChangeEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            login().catch(e => {
-              setError(e.graphQLErrors[0].message);
-            });
-          }}
-        >
+        <form onSubmit={handleSubmit(onSubmit)}>
           <TextField
-            label="Username"
-            value={username}
+            label="Username *"
             margin="normal"
-            required
-            onChange={handleUsername}
             fullWidth
             autoFocus
+            error={Boolean(errors.username)}
+            name="username"
+            inputRef={register({ required: true })}
             variant="outlined"
           />
           <TextField
-            label="Password"
+            label="Password *"
+            name="password"
             margin="normal"
-            required
-            value={password}
-            onChange={handlePassword}
             fullWidth
+            error={Boolean(errors.password)}
             type="password"
+            inputRef={register({ required: true })}
             variant="outlined"
           />
           <Button
