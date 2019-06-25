@@ -15,6 +15,7 @@ const useStyles = makeStyles(
 export const Header = () => {
   const classes = useStyles({});
   const token = useUserState('token');
+  const username = useUserState('username');
   const isAuthorized = Boolean(token);
   return (
     <div>
@@ -26,9 +27,18 @@ export const Header = () => {
             </Button>
           </Typography>
           {isAuthorized ? (
-            <Button color="inherit" component={AdapterLink} to="/logout">
-              logout
-            </Button>
+            <>
+              <Button
+                color="inherit"
+                component={AdapterLink}
+                to={`/${username}`}
+              >
+                profile
+              </Button>
+              <Button color="inherit" component={AdapterLink} to="/logout">
+                logout
+              </Button>
+            </>
           ) : (
             <Button color="inherit" component={AdapterLink} to="/login">
               login
