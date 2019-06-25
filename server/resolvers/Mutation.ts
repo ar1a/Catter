@@ -4,6 +4,7 @@ import { Context, APP_SECRET, getUserId } from '../utils';
 import { hash, verify } from 'argon2';
 import { sign } from 'jsonwebtoken';
 import { validate } from 'the-big-username-blacklist';
+import * as zxcvbn from 'zxcvbn';
 
 export const Mutation = prismaObjectType({
   name: 'Mutation',
@@ -22,8 +23,19 @@ export const Mutation = prismaObjectType({
         if (fixedUsername.length < 3) {
           throw new Error('Username too short');
         }
-        if (password.length < 8) {
-          throw new Error('Password too short');
+        const zxcvbnResults = zxcvbn(password, [fixedUsername]);
+        if (zxcvbnResults.score < 3) {
+          let suggestions = '';
+          if (zxcvbnResults.feedback.suggestions) {
+            suggestions =
+              'Some suggestions are: ' +
+              zxcvbnResults.feedback.suggestions.join(' ');
+          }
+
+          let warning = '';
+          if (zxcvbnResults.feedback.warning)
+            warning = zxcvbnResults.feedback.warning + '.';
+          throw new Error(`Password too weak. ${warning} ${suggestions}`);
         }
         if (!validate(fixedUsername)) {
           throw new Error('Username is in blacklist');

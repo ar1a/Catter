@@ -9,6 +9,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@types/zxcvbn": "^4.4.0",
     "argon2": "^0.23.0",
     "graphql": "^14.3.1",
     "graphql-shield": "^5.3.7",
@@ -17,7 +18,8 @@
     "nexus": "^0.11.7",
     "nexus-prisma": "^0.3.7",
     "prisma-client-lib": "^1.34.0",
-    "the-big-username-blacklist": "^1.5.2"
+    "the-big-username-blacklist": "^1.5.2",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@types/graphql": "^14.2.0",
