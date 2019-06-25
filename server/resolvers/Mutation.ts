@@ -16,19 +16,20 @@ export const Mutation = prismaObjectType({
       },
       resolve: async (_, { username, password }, ctx: Context) => {
         const hashedPassword = await hash(password);
+        const fixedUsername = username.trim().toLowerCase();
         // TODO: zxcvbn password
         // TODO: yup validation or something
-        if (username.length < 3) {
+        if (fixedUsername.length < 3) {
           throw new Error('Username too short');
         }
         if (password.length < 8) {
           throw new Error('Password too short');
         }
-        if (!validate(username)) {
+        if (!validate(fixedUsername)) {
           throw new Error('Username is in blacklist');
         }
         const user = await ctx.prisma.createUser({
-          username: username.toLowerCase(),
+          username: fixedUsername,
           password: hashedPassword
         });
 
@@ -47,7 +48,7 @@ export const Mutation = prismaObjectType({
       },
       resolve: async (_, { username, password }, ctx: Context) => {
         const user = await ctx.prisma.user({
-          username: username.toLowerCase()
+          username: username.toLowerCase().trim()
         });
         if (!user) {
           throw new Error('No user found with that username');
