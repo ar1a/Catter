@@ -4,14 +4,18 @@ import {
   CardContent,
   makeStyles,
   createStyles,
-  Typography
+  Typography,
+  CardActions,
+  Button
 } from '@material-ui/core';
 import { Redirect, RouteComponentProps } from 'react-router';
 import gql from 'graphql-tag';
 import { getmeow } from './types/getmeow';
-import { useQuery } from 'react-apollo-hooks';
+import { deletemeow } from './types/deletemeow';
+import { useQuery, useMutation } from 'react-apollo-hooks';
 import { Loader } from './Loader';
 import { fade } from '@material-ui/core/styles';
+import { useUserState } from './UserState';
 
 const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
   const [toMeow, setToMeow] = useState(false);
@@ -44,6 +48,9 @@ const useStyles = makeStyles(theme =>
         ),
         cursor: 'pointer'
       }
+    },
+    delete: {
+      marginLeft: 'auto'
     }
   })
 );
@@ -65,6 +72,22 @@ export const Meow: React.FC<{
 
   const [toMeow, onCardClick] = useMeowRedirect();
   const [toUser, onUserClick] = useMeowRedirect();
+  const [deleted, setDeleted] = useState(false);
+  const myUsername = useUserState('username');
+  const deleteMeow = useMutation<deletemeow>(DELETE_MEOW, {
+    variables: { id },
+    refetchQueries: ['getuser', 'getfeed']
+  });
+
+  const onDeleteClick = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    await deleteMeow();
+    setDeleted(true);
+  }, []);
+
+  if (deleted) {
+    return <Redirect to={`/${username}`} />;
+  }
 
   if (!noRedirect) {
     if (toMeow) {
@@ -90,6 +113,18 @@ export const Meow: React.FC<{
         </Typography>
         {content}
       </CardContent>
+      {myUsername && myUsername === username && (
+        <CardActions>
+          <Button
+            size="small"
+            color="secondary"
+            className={classes.delete}
+            onClick={onDeleteClick}
+          >
+            Delete
+          </Button>
+        </CardActions>
+      )}
     </Card>
   );
 };
@@ -103,6 +138,14 @@ const GET_MEOW = gql`
         id
         username
       }
+    }
+  }
+`;
+
+const DELETE_MEOW = gql`
+  mutation deletemeow($id: ID!) {
+    deleteMeow(id: $id) {
+      id
     }
   }
 `;
