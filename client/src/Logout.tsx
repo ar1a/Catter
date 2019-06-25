@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Redirect } from 'react-router-dom';
-import { UserContext } from './State';
+import { useDispatch } from './UserState';
 
 export const Logout = () => {
-  const { setToken } = useContext(UserContext);
-  localStorage.removeItem('token');
-  setToken(null);
+  const dispatch = useDispatch();
+  dispatch({ type: 'logout' });
   return <Redirect to="/" />;
 };

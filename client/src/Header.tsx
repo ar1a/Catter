@@ -1,7 +1,7 @@
 import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
-import React, { useContext } from 'react';
-import { UserContext } from './State';
+import React from 'react';
+import { useUserState } from './UserState';
 import { AdapterLink } from './Utils';
 
 const useStyles = makeStyles(
@@ -14,7 +14,7 @@ const useStyles = makeStyles(
 
 export const Header = () => {
   const classes = useStyles({});
-  const { token } = useContext(UserContext);
+  const token = useUserState('token');
   const isAuthorized = Boolean(token);
   return (
     <div>

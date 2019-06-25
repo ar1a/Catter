@@ -1,7 +1,7 @@
 import { Container, createMuiTheme, CssBaseline } from '@material-ui/core';
 import teal from '@material-ui/core/colors/teal';
 import { ThemeProvider } from '@material-ui/styles';
-import React, { useCallback, useContext, useState } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Redirect,
@@ -14,7 +14,7 @@ import { Header } from './Header';
 import './jost/jost.css';
 import { Login } from './Login';
 import { Logout } from './Logout';
-import { IUserContext, UserContext } from './State';
+import { Provider, useUserState } from './UserState';
 import { Feed } from './Feed';
 import { SingleMeow } from './Meow';
 import { User } from './User';
@@ -37,7 +37,7 @@ const PrivateRoute: React.FC<
     component: any /*forgive me for i have sinned*/;
   } & RouteProps
 > = ({ component: Component, ...rest }) => {
-  const { token } = useContext(UserContext);
+  const token = useUserState('token');
   const isAuthenticated = Boolean(token);
   return (
     <Route
@@ -56,18 +56,9 @@ const PrivateRoute: React.FC<
 };
 
 const App: React.FC = () => {
-  const setToken = useCallback(token => {
-    setUserState(u => ({ ...u, token }));
-  }, []);
-
-  const [userState, setUserState] = useState<IUserContext>({
-    token: localStorage.getItem('token'),
-    setToken
-  });
-
   return (
     <ThemeProvider theme={theme}>
-      <UserContext.Provider value={userState}>
+      <Provider>
         <Router>
           <CssBaseline />
           <Header />
@@ -81,7 +72,7 @@ const App: React.FC = () => {
             </Switch>
           </Container>
         </Router>
-      </UserContext.Provider>
+      </Provider>
     </ThemeProvider>
   );
 };

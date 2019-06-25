@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import gql from 'graphql-tag';
 import { getfeed, getfeed_feed } from './types/getfeed';
 import { useQuery } from 'react-apollo-hooks';
 import { Meow } from './Meow';
 import { CreateMeow } from './CreateMeow';
-import { UserContext } from './State';
+import { useUserState } from './UserState';
 import { Loader } from './Loader';
 
 const GET_FEED = gql`
@@ -23,7 +23,7 @@ const GET_FEED = gql`
 export const Feed = () => {
   const { data, error, loading } = useQuery<getfeed>(GET_FEED);
 
-  const { token } = useContext(UserContext);
+  const token = useUserState('token');
   const loggedIn = Boolean(token);
   if (loading) {
     return <Loader />;

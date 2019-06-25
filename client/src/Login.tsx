@@ -7,10 +7,10 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import gql from 'graphql-tag';
-import React, { useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useMutation } from 'react-apollo-hooks';
 import { Redirect } from 'react-router-dom';
-import { UserContext } from './State';
+import { useDispatch } from './UserState';
 // eslint-disable-next-line
 import { login } from './types/login';
 import { register as REGISTER_TYPE } from './types/register';
@@ -65,7 +65,7 @@ export const Login = () => {
   const [redirect, setRedirect] = useState(false);
   const [error, setError] = useState('');
   const [isRegister, setRegister] = useState(false);
-  const { setToken } = useContext(UserContext);
+  const dispatch = useDispatch();
 
   const onSubmit = useCallback(
     async ({ username, password }: Data) => {
@@ -74,22 +74,22 @@ export const Login = () => {
           const result: { data: REGISTER_TYPE } = await doRegister({
             variables: { username, password }
           });
-          localStorage.setItem('token', result.data.signup.token);
-          setToken(result.data.signup.token);
+          const { token } = result.data.signup;
+          dispatch({ type: 'login', token, username });
           setRedirect(true);
         } else {
           const result: { data: login } = await login({
             variables: { username, password }
           });
-          localStorage.setItem('token', result.data.login.token);
-          setToken(result.data.login.token);
+          const { token } = result.data.login;
+          dispatch({ type: 'login', token, username });
           setRedirect(true);
         }
       } catch (e) {
         setError(e.graphQLErrors[0].message);
       }
     },
-    [login, setToken, isRegister, doRegister]
+    [login, dispatch, isRegister, doRegister]
   );
 
   const onClick = useCallback(() => setRegister(!isRegister), [
