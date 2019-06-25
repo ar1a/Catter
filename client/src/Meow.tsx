@@ -86,7 +86,7 @@ export const Meow: React.FC<{
           onClick={onUserClick}
           className={classes.username}
         >
-          {username}
+          @{username}
         </Typography>
         {content}
       </CardContent>

@@ -64,7 +64,7 @@ export const User: React.FC<RouteComponentProps<{ username: string }>> = ({
           <CardContent>
             <ReactFitText>
               <Typography variant="h3" className={classes.username}>
-                {username}
+                @{username}
               </Typography>
             </ReactFitText>
           </CardContent>
