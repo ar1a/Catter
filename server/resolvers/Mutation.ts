@@ -21,8 +21,13 @@ export const Mutation = prismaObjectType({
         // TODO: zxcvbn password
         // TODO: yup validation or something
         if (fixedUsername.length < 3) {
-          throw new Error('Username too short');
+          throw new Error('Username too short (< 3)');
         }
+
+        if (fixedUsername.length > 20) {
+          throw new Error('Username too long (> 20)');
+        }
+
         const zxcvbnResults = zxcvbn(password, [fixedUsername]);
         if (zxcvbnResults.score < 3) {
           let suggestions = '';
