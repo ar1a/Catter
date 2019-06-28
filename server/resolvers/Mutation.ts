@@ -6,6 +6,7 @@ import { sign } from 'jsonwebtoken';
 import { validate } from 'the-big-username-blacklist';
 import * as zxcvbn from 'zxcvbn';
 import * as yup from 'yup';
+import * as R from 'ramda';
 
 const signupSchema = yup.object().shape({
   username: yup
@@ -35,21 +36,25 @@ export const Mutation = prismaObjectType({
       },
       resolve: async (_, args, ctx: Context) => {
         const { username, password } = await signupSchema.validate(args);
-        console.log(username, password);
 
-        const zxcvbnResults = zxcvbn(password, [username]);
-        if (zxcvbnResults.score < 3) {
-          let suggestions = '';
-          if (zxcvbnResults.feedback.suggestions) {
-            suggestions =
-              'Some suggestions are: ' +
-              zxcvbnResults.feedback.suggestions.join(' ');
-          }
+        const {
+          score,
+          feedback: { suggestions, warning }
+        } = zxcvbn(password, [username]);
+        if (score < 3) {
+          const suggestions_ = R.ifElse(
+            R.isEmpty,
+            () => '',
+            R.pipe(
+              R.join(' '),
+              R.concat('Some suggestions are: ')
+            )
+          )(suggestions);
 
-          let warning = '';
-          if (zxcvbnResults.feedback.warning)
-            warning = zxcvbnResults.feedback.warning + '.';
-          throw new Error(`Password too weak. ${warning} ${suggestions}`);
+          const warning_ = R.ifElse(R.isEmpty, () => '', R.concat(R.__, '.'))(
+            warning
+          );
+          throw new Error(`Password too weak. ${warning_} ${suggestions_}`);
         }
 
         const hashedPassword = await hash(password);
