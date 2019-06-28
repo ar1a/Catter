@@ -78,6 +78,7 @@ export const Mutation = prismaObjectType({
         if (!user) {
           throw new Error('No user found with that username');
         }
+
         const passwordValid = await verify(user.password, password);
         if (!passwordValid) {
           throw new Error('Password invalid');
