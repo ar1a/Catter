@@ -7,6 +7,8 @@ import { validate } from 'the-big-username-blacklist';
 import * as zxcvbn from 'zxcvbn';
 import * as yup from 'yup';
 import * as R from 'ramda';
+import { Prisma, User } from '../generated/prisma-client';
+import { tryCatch } from 'fp-ts/lib/TaskEither';
 
 const signupSchema = yup.object().shape({
   username: yup
@@ -24,6 +26,25 @@ const signupSchema = yup.object().shape({
     }),
   password: yup.string().required()
 });
+
+const nullToThrow = async <T>(fn: () => Promise<T | null>): Promise<T> => {
+  const x = await fn();
+  if (x) {
+    return x;
+  }
+  throw new Error();
+};
+
+const boolToThrow = async <T>(
+  fn: () => Promise<boolean>,
+  def: T
+): Promise<T> => {
+  const x = await fn();
+  if (x) {
+    return def;
+  }
+  throw new Error();
+};
 
 export const Mutation = prismaObjectType({
   name: 'Mutation',
@@ -76,23 +97,32 @@ export const Mutation = prismaObjectType({
         username: stringArg(), // TODO: Support email silently
         password: stringArg()
       },
-      resolve: async (_, { username, password }, ctx: Context) => {
-        const user = await ctx.prisma.user({
-          username: username.toLowerCase().trim()
-        });
-        if (!user) {
-          throw new Error('No user found with that username');
-        }
-
-        const passwordValid = await verify(user.password, password);
-        if (!passwordValid) {
-          throw new Error('Password invalid');
-        }
-
-        return {
-          token: sign({ userId: user.id }, APP_SECRET),
-          user
-        };
+      resolve: (_, { username, password }, ctx: Context) => {
+        return tryCatch(
+          () =>
+            nullToThrow(() =>
+              ctx.prisma.user({ username: username.toLowerCase().trim() })
+            ),
+          () => 'No user found with that username'
+        )
+          .chain(user =>
+            tryCatch(
+              () => boolToThrow(() => verify(user.password, password), user),
+              () => 'Password invalid'
+            )
+          )
+          .fold(
+            err => {
+              throw new Error(err);
+            },
+            user => {
+              return {
+                token: sign({ userId: user.id }, APP_SECRET),
+                user
+              };
+            }
+          )
+          .run();
       }
     });
 

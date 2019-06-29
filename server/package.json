@@ -11,6 +11,7 @@
   "dependencies": {
     "@types/zxcvbn": "^4.4.0",
     "argon2": "^0.23.0",
+    "fp-ts": "^1.19.3",
     "graphql": "^14.3.1",
     "graphql-shield": "^5.3.7",
     "graphql-yoga": "^1.17.4",
