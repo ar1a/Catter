@@ -7,7 +7,6 @@ import { validate } from 'the-big-username-blacklist';
 import * as zxcvbn from 'zxcvbn';
 import * as yup from 'yup';
 import * as R from 'ramda';
-import { Prisma, User } from '../generated/prisma-client';
 import { tryCatch } from 'fp-ts/lib/TaskEither';
 
 const signupSchema = yup.object().shape({
