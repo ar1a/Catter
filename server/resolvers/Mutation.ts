@@ -27,7 +27,7 @@ const signupSchema = yup.object().shape({
 });
 
 // constant :: a -> b -> a
-const constant = R.curryN(2, a => a);
+const constant = <T>(a: T) => (_: any) => a;
 
 const nullToThrow = async <T>(fn: () => Promise<T | null>): Promise<T> => {
   const x = await fn();
@@ -107,12 +107,12 @@ export const Mutation = prismaObjectType({
             nullToThrow(() =>
               ctx.prisma.user({ username: username.toLowerCase().trim() })
             ),
-          () => 'No user found with that username'
+          constant('No user found with that username')
         )
           .chain(user =>
             tryCatch(
               () => boolToThrow(() => verify(user.password, password), user),
-              () => 'Password invalid'
+              constant('Password invalid')
             )
           )
           .fold(
