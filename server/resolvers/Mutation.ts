@@ -7,7 +7,8 @@ import { validate } from 'the-big-username-blacklist';
 import * as zxcvbn from 'zxcvbn';
 import * as yup from 'yup';
 import * as R from 'ramda';
-import { tryCatch } from 'fp-ts/lib/TaskEither';
+import { tryCatch, leftTask, rightTask } from 'fp-ts/lib/TaskEither';
+import { Task } from 'fp-ts/lib/Task';
 
 const signupSchema = yup.object().shape({
   username: yup
@@ -58,40 +59,61 @@ export const Mutation = prismaObjectType({
         password: stringArg()
       },
       resolve: async (_, args, ctx: Context) => {
-        const { username, password } = await signupSchema.validate(args);
+        return tryCatch(() => signupSchema.validate(args), a => a)
+          .chain(({ username, password }) => {
+            const {
+              score,
+              feedback: { suggestions, warning }
+            } = zxcvbn(password, [username]);
+            const suggestions_ = R.ifElse(
+              R.isEmpty,
+              constant(''),
+              R.pipe(
+                R.join(' '),
+                R.concat('Some suggestions are: ')
+              )
+            )(suggestions);
 
-        const {
-          score,
-          feedback: { suggestions, warning }
-        } = zxcvbn(password, [username]);
-        if (score < 3) {
-          const suggestions_ = R.ifElse(
-            R.isEmpty,
-            constant(''),
-            R.pipe(
-              R.join(' '),
-              R.concat('Some suggestions are: ')
-            )
-          )(suggestions);
-
-          const warning_ = R.ifElse(
-            R.isEmpty,
-            constant(''),
-            R.concat(R.__, '.')
-          )(warning);
-          throw new Error(`Password too weak. ${warning_} ${suggestions_}`);
-        }
-
-        const hashedPassword = await hash(password);
-        const user = await ctx.prisma.createUser({
-          username,
-          password: hashedPassword
-        });
-
-        return {
-          token: sign({ userId: user.id }, APP_SECRET),
-          user
-        };
+            const warning_ = R.ifElse(
+              R.isEmpty,
+              constant(''),
+              R.concat(R.__, '.')
+            )(warning);
+            const err = R.join(' ', [
+              'Password too weak.',
+              warning_,
+              suggestions_
+            ]);
+            return score < 3
+              ? leftTask<string, null>(new Task(async () => err))
+              : rightTask<string, null>(new Task(async () => null))
+                  .chain(_ =>
+                    tryCatch(
+                      () => hash(password),
+                      constant('UNREACHABLE ID: 5')
+                    )
+                  )
+                  .chain(hashedPassword =>
+                    tryCatch(
+                      () =>
+                        ctx.prisma.createUser({
+                          username,
+                          password: hashedPassword
+                        }),
+                      constant('UNREACHABLE ID: 6')
+                    ).map(user => ({
+                      token: sign({ userId: user.id }, APP_SECRET),
+                      user
+                    }))
+                  );
+          })
+          .fold(
+            err => {
+              throw new Error(err as string);
+            },
+            a => a
+          )
+          .run();
       }
     });
 
