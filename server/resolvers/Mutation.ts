@@ -34,6 +34,11 @@ const signupSchema = yup.object().shape({
   password: yup.string().required()
 });
 
+interface schema {
+  username: string;
+  password: string;
+}
+
 // constant :: a -> b -> a
 const constant = <T>(a: T) => (_: any) => a;
 
@@ -60,57 +65,65 @@ export const Mutation = prismaObjectType({
         password: stringArg()
       },
       resolve: async (_, args, ctx: Context) => {
-        return tryCatch(() => signupSchema.validate(args), a => a)
-          .chain(({ username, password }) => {
-            const {
-              score,
-              feedback: { suggestions, warning }
-            } = zxcvbn(password, [username]);
-            const suggestions_ = R.ifElse(
-              R.isEmpty,
-              constant(''),
-              R.pipe(
-                R.join(' '),
-                R.concat('Some suggestions are: ')
-              )
-            )(suggestions);
+        const validateSchema = tryCatch(
+          () => signupSchema.validate(args),
+          (a: Error) => a.message
+        );
 
-            const warning_ = R.ifElse(
-              R.isEmpty,
-              constant(''),
-              R.concat(R.__, '.')
-            )(warning);
-            const err = R.join(' ', [
-              'Password too weak.',
-              warning_,
-              suggestions_
-            ]);
-            return score < 3
-              ? leftTask<string, null>(new Task(async () => err))
-              : rightTask<string, null>(new Task(async () => null))
-                  .chain(_ =>
-                    tryCatch(
-                      () => hash(password),
-                      constant('UNREACHABLE ID: 5')
-                    )
-                  )
-                  .chain(hashedPassword =>
-                    tryCatch(
-                      () =>
-                        ctx.prisma.createUser({
-                          username,
-                          password: hashedPassword
-                        }),
-                      constant('UNREACHABLE ID: 6')
-                    ).map(user => ({
-                      token: sign({ userId: user.id }, APP_SECRET),
-                      user
-                    }))
-                  );
-          })
+        const validatePassword = ({ username, password }) => {
+          const {
+            score,
+            feedback: { suggestions, warning }
+          } = zxcvbn(password, [username]);
+          const suggestions_ = R.ifElse(
+            R.isEmpty,
+            constant(''),
+            R.pipe(
+              R.join(' '),
+              R.concat('Some suggestions are: ')
+            )
+          )(suggestions);
+
+          const warning_ = R.ifElse(
+            R.isEmpty,
+            constant(''),
+            R.concat(R.__, '.')
+          )(warning);
+          const err = R.join(' ', [
+            'Password too weak.',
+            warning_,
+            suggestions_
+          ]);
+          return score < 3
+            ? leftTask<string, schema>(new Task(async () => err))
+            : rightTask<string, schema>(
+                new Task(async () => ({ username, password }))
+              );
+        };
+
+        const hashPassword = ({ password }: schema) =>
+          tryCatch(() => hash(password), constant('UNREACHABLE ID: 5'));
+
+        const createUser = (username: string) => (hashedPassword: null) =>
+          tryCatch(
+            () => ctx.prisma.createUser({ username, password: hashedPassword }),
+            (a: Error) => a.message
+          );
+
+        const getToken = (user: User) => ({
+          token: sign({ userId: user.id }, APP_SECRET),
+          user
+        });
+
+        return validateSchema
+          .chain(validatePassword)
+          .chain(({ username, password }) =>
+            hashPassword({ username, password }).chain(createUser(username))
+          )
+          .map(getToken)
           .fold(
             err => {
-              throw new Error(err as string);
+              throw new Error(err);
             },
             a => a
           )
