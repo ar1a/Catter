@@ -7,8 +7,15 @@ import { validate } from 'the-big-username-blacklist';
 import * as zxcvbn from 'zxcvbn';
 import * as yup from 'yup';
 import * as R from 'ramda';
-import { tryCatch, leftTask, rightTask } from 'fp-ts/lib/TaskEither';
+import {
+  tryCatch,
+  leftTask,
+  rightTask,
+  TaskEither
+} from 'fp-ts/lib/TaskEither';
+import { left, right } from 'fp-ts/lib/Either';
 import { Task } from 'fp-ts/lib/Task';
+import { User } from '../generated/prisma-client';
 
 const signupSchema = yup.object().shape({
   username: yup
@@ -30,23 +37,17 @@ const signupSchema = yup.object().shape({
 // constant :: a -> b -> a
 const constant = <T>(a: T) => (_: any) => a;
 
-const nullToThrow = async <T>(fn: () => Promise<T | null>): Promise<T> => {
-  const x = await fn();
-  if (x) {
-    return x;
-  }
-  throw new Error();
-};
-
-const boolToThrow = async <T>(
-  fn: () => Promise<boolean>,
-  def: T
-): Promise<T> => {
-  const x = await fn();
-  if (x) {
-    return def;
-  }
-  throw new Error();
+const fromNullablePromise = <Err, Value>(
+  f: () => Promise<Value | null>,
+  onNull: Err
+): TaskEither<Err, Value> => {
+  return new TaskEither(
+    new Task(() =>
+      f().then(valueOrNull =>
+        valueOrNull === null ? left(onNull) : right(valueOrNull)
+      )
+    )
+  );
 };
 
 export const Mutation = prismaObjectType({
@@ -124,29 +125,30 @@ export const Mutation = prismaObjectType({
         password: stringArg()
       },
       resolve: (_, { username, password }, ctx: Context) => {
-        return tryCatch(
-          () =>
-            nullToThrow(() =>
-              ctx.prisma.user({ username: username.toLowerCase().trim() })
-            ),
-          constant('No user found with that username')
-        )
-          .chain(user =>
-            tryCatch(
-              () => boolToThrow(() => verify(user.password, password), user),
-              constant('Password invalid')
-            )
-          )
+        const getUser = fromNullablePromise(
+          () => ctx.prisma.user({ username: username.toLowerCase().trim() }),
+          'No user found with that username'
+        );
+
+        const verifyPassword = (user: User) =>
+          fromNullablePromise(
+            () => verify(user.password, password).then(b => (b ? user : null)),
+            'Password invalid'
+          );
+
+        const getToken = (user: User) => ({
+          token: sign({ userId: user.id }, APP_SECRET),
+          user
+        });
+
+        return getUser
+          .chain(verifyPassword)
+          .map(getToken)
           .fold(
             err => {
               throw new Error(err);
             },
-            user => {
-              return {
-                token: sign({ userId: user.id }, APP_SECRET),
-                user
-              };
-            }
+            a => a
           )
           .run();
       }
