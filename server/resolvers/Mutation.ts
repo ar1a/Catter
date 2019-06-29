@@ -27,6 +27,9 @@ const signupSchema = yup.object().shape({
   password: yup.string().required()
 });
 
+// constant :: a -> b -> a
+const constant = R.curryN(2, a => a);
+
 const nullToThrow = async <T>(fn: () => Promise<T | null>): Promise<T> => {
   const x = await fn();
   if (x) {
@@ -65,16 +68,18 @@ export const Mutation = prismaObjectType({
         if (score < 3) {
           const suggestions_ = R.ifElse(
             R.isEmpty,
-            () => '',
+            constant(''),
             R.pipe(
               R.join(' '),
               R.concat('Some suggestions are: ')
             )
           )(suggestions);
 
-          const warning_ = R.ifElse(R.isEmpty, () => '', R.concat(R.__, '.'))(
-            warning
-          );
+          const warning_ = R.ifElse(
+            R.isEmpty,
+            constant(''),
+            R.concat(R.__, '.')
+          )(warning);
           throw new Error(`Password too weak. ${warning_} ${suggestions_}`);
         }
 
