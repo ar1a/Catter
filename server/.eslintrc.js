@@ -32,7 +32,8 @@ module.exports = {
       'error',
       { whitelist: { ctx: true, err: true, args: true } }
     ],
-    'import/order': ['error', { 'newlines-between': 'always' }]
+    'import/order': ['error', { 'newlines-between': 'always' }],
+    'prefer-const': 'error'
   },
   parser: '@typescript-eslint/parser'
 };
