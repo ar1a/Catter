@@ -1,10 +1,11 @@
+import * as path from 'path';
+
+import { makePrismaSchema } from 'nexus-prisma';
+import { GraphQLServer } from 'graphql-yoga';
+
 import { prisma } from './generated/prisma-client';
 import datamodelInfo from './generated/nexus-prisma';
-import * as path from 'path';
-import { stringArg } from 'nexus';
 import * as allTypes from './resolvers';
-import { prismaObjectType, makePrismaSchema } from 'nexus-prisma';
-import { GraphQLServer } from 'graphql-yoga';
 import permissions from './permissions';
 
 const schema = makePrismaSchema({
@@ -25,4 +26,5 @@ const server = new GraphQLServer({
   context: request => ({ prisma, ...request })
 });
 
+// eslint-disable-next-line no-console
 server.start(() => console.log('Server running on http://localhost:4000'));

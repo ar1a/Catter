@@ -1,6 +1,5 @@
 import { prismaObjectType } from 'nexus-prisma';
 import { stringArg, idArg } from 'nexus';
-import { Context, APP_SECRET, getUserId } from '../utils';
 import { hash, verify } from 'argon2';
 import { sign } from 'jsonwebtoken';
 import { validate } from 'the-big-username-blacklist';
@@ -15,6 +14,8 @@ import {
 } from 'fp-ts/lib/TaskEither';
 import { left, right } from 'fp-ts/lib/Either';
 import { Task } from 'fp-ts/lib/Task';
+
+import { Context, APP_SECRET, getUserId } from '../utils';
 import { User } from '../generated/prisma-client';
 
 const signupSchema = yup.object().shape({
@@ -34,7 +35,7 @@ const signupSchema = yup.object().shape({
   password: yup.string().required()
 });
 
-interface schema {
+interface Schema {
   username: string;
   password: string;
 }
@@ -45,16 +46,14 @@ const constant = <T>(a: T) => (_: any) => a;
 const fromNullablePromise = <Err, Value>(
   f: () => Promise<Value | null>,
   onNull: Err
-): TaskEither<Err, Value> => {
-  return new TaskEither(
+): TaskEither<Err, Value> =>
+  new TaskEither(
     new Task(() =>
       f().then(valueOrNull =>
         valueOrNull === null ? left(onNull) : right(valueOrNull)
       )
     )
   );
-};
-
 const getToken = (user: User) => ({
   token: sign({ userId: user.id }, APP_SECRET),
   user
@@ -100,13 +99,13 @@ export const Mutation = prismaObjectType({
             suggestions_
           ]);
           return score < 3
-            ? leftTask<string, schema>(new Task(async () => err))
-            : rightTask<string, schema>(
+            ? leftTask<string, Schema>(new Task(async () => err))
+            : rightTask<string, Schema>(
                 new Task(async () => ({ username, password }))
               );
         };
 
-        const hashPassword = ({ password }: schema) =>
+        const hashPassword = ({ password }: Schema) =>
           tryCatch(() => hash(password), constant('UNREACHABLE ID: 5'));
 
         const createUser = (username: string) => (hashedPassword: null) =>

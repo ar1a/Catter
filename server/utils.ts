@@ -1,5 +1,6 @@
-import { Prisma } from './generated/prisma-client';
 import { verify } from 'jsonwebtoken';
+
+import { Prisma } from './generated/prisma-client';
 
 // TODO: Change in production!!
 export const APP_SECRET =

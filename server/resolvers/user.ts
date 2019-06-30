@@ -1,6 +1,7 @@
 import { prismaObjectType } from 'nexus-prisma';
-import { Context } from '../utils';
 import { RootValue } from 'nexus/dist/core';
+
+import { Context } from '../utils';
 
 export const User = prismaObjectType({
   name: 'User',

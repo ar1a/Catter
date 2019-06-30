@@ -1,4 +1,5 @@
 import { rule, shield, and } from 'graphql-shield';
+
 import { Context, getUserId } from './utils';
 
 const isAuthenticatedUser = rule()((_, __, ctx: Context) => {

@@ -1,4 +1,5 @@
 import { prismaObjectType } from 'nexus-prisma';
+
 import { Context, getUserId } from '../utils';
 
 export const Query = prismaObjectType({
