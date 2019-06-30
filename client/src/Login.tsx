@@ -12,8 +12,10 @@ import { useMutation } from 'react-apollo-hooks';
 import { Redirect } from 'react-router-dom';
 import { useDispatch } from './UserState';
 // eslint-disable-next-line
-import { login } from './types/login';
-import { register as REGISTER_TYPE } from './types/register';
+import { login, login_login } from './types/login';
+import { register as REGISTER_TYPE, register_signup } from './types/register';
+import { tryCatch, rightTask } from 'fp-ts/es6/TaskEither';
+import { Task } from 'fp-ts/es6/Task';
 import useForm from 'react-hook-form';
 
 const LOGIN = gql`
@@ -69,25 +71,36 @@ export const Login = () => {
 
   const onSubmit = useCallback(
     async ({ username, password }: Data) => {
-      try {
-        if (isRegister) {
-          const result: { data: REGISTER_TYPE } = await doRegister({
-            variables: { username, password }
-          });
-          const { token } = result.data.signup;
-          dispatch({ type: 'login', token, username });
-          setRedirect(true);
-        } else {
-          const result: { data: login } = await login({
-            variables: { username, password }
-          });
-          const { token } = result.data.login;
-          dispatch({ type: 'login', token, username });
-          setRedirect(true);
-        }
-      } catch (e) {
-        setError(e.graphQLErrors[0].message);
-      }
+      const dispatchLogin = ({ token }: register_signup | login_login) => {
+        dispatch({ type: 'login', token, username });
+        setRedirect(true);
+      };
+
+      const mutate = (): Promise<{ result: { data: REGISTER_TYPE | login } }> =>
+        isRegister
+          ? doRegister({ variables: { username, password } })
+          : login({ variables: { username, password } });
+
+      const sendMutation = tryCatch(
+        mutate,
+        (e: any) => e.graphQLErrors[0].message
+      );
+
+      // I can't get typechecking working here >:(
+      const sendDispatch = (result: any) => {
+        return rightTask<string, void>(
+          new Task(async () =>
+            dispatchLogin(
+              result.data.signup ? result.data.signup : result.data.login
+            )
+          )
+        );
+      };
+
+      return sendMutation
+        .chain(sendDispatch)
+        .fold(setError, a => a)
+        .run();
     },
     [login, dispatch, isRegister, doRegister]
   );
@@ -146,7 +159,7 @@ export const Login = () => {
             size="large"
             className={classes.submit}
           >
-            {(isRegister && 'Register') || 'Login'}
+            {isRegister ? 'Register' : 'Login'}
           </Button>
           <Button
             fullWidth
@@ -154,7 +167,7 @@ export const Login = () => {
             color="secondary"
             onClick={onClick}
           >
-            {(isRegister && 'Login') || 'Register'}
+            {isRegister ? 'Login' : 'Register'}
           </Button>
         </form>
       </div>
