@@ -180,9 +180,7 @@ export const Mutation = prismaObjectType({
       type: 'Meow',
       nullable: true,
       args: { id: idArg() },
-      resolve: (_, { id }, ctx: Context) => {
-        return ctx.prisma.deleteMeow({ id });
-      }
+      resolve: (_, { id }, ctx: Context) => ctx.prisma.deleteMeow({ id })
     });
   }
 });
