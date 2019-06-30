@@ -55,6 +55,11 @@ const fromNullablePromise = <Err, Value>(
   );
 };
 
+const getToken = (user: User) => ({
+  token: sign({ userId: user.id }, APP_SECRET),
+  user
+});
+
 export const Mutation = prismaObjectType({
   name: 'Mutation',
   definition(t) {
@@ -110,11 +115,6 @@ export const Mutation = prismaObjectType({
             (a: Error) => a.message
           );
 
-        const getToken = (user: User) => ({
-          token: sign({ userId: user.id }, APP_SECRET),
-          user
-        });
-
         return validateSchema
           .chain(validatePassword)
           .chain(({ username, password }) =>
@@ -148,11 +148,6 @@ export const Mutation = prismaObjectType({
             () => verify(user.password, password).then(b => (b ? user : null)),
             'Password invalid'
           );
-
-        const getToken = (user: User) => ({
-          token: sign({ userId: user.id }, APP_SECRET),
-          user
-        });
 
         return getUser
           .chain(verifyPassword)
