@@ -40,7 +40,8 @@ const useStyles = makeStyles(theme =>
           theme.palette.action.hoverOpacity
         ),
         cursor: 'pointer'
-      }
+      },
+      wordWrap: 'break-word'
     },
     username: {
       '&:hover': {
