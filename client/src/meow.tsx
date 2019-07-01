@@ -111,7 +111,9 @@ export const Meow: React.FC<{
         >
           @{username}
         </Typography>
-        {content}
+        <Typography variant="h5" component="div">
+          {content}
+        </Typography>
       </CardContent>
       {myUsername && myUsername === username && (
         <CardActions>
