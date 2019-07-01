@@ -1,8 +1,9 @@
 import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import React from 'react';
-import { useUserState } from './UserState';
-import { AdapterLink } from './Utils';
+
+import { useUserState } from './user-state';
+import { AdapterLink } from './utils';
 
 const useStyles = makeStyles(
   createStyles({

@@ -10,8 +10,9 @@ import {
 } from '@material-ui/core';
 import useForm from 'react-hook-form';
 import gql from 'graphql-tag';
-import { postmeow } from './types/postmeow';
 import { useMutation } from 'react-apollo-hooks';
+
+import { postmeow } from './types/postmeow';
 
 const useStyles = makeStyles(
   createStyles({
@@ -50,8 +51,8 @@ export const CreateMeow = () => {
       try {
         await postMeow({ variables: { content: data.content } });
         reset();
-      } catch (e) {
-        console.error(e);
+      } catch (error) {
+        console.error(error);
       }
     },
     [postMeow, reset]

@@ -9,15 +9,16 @@ import {
   RouteProps,
   Switch
 } from 'react-router-dom';
+
 import './App.css';
-import { Header } from './Header';
+import { Header } from './header';
 import './jost/jost.css';
-import { Login } from './Login';
-import { Logout } from './Logout';
-import { Provider, useUserState } from './UserState';
-import { Feed } from './Feed';
-import { SingleMeow } from './Meow';
-import { User } from './User';
+import { Login } from './login';
+import { Logout } from './logout';
+import { Provider, useUserState } from './user-state';
+import { Feed } from './feed';
+import { SingleMeow } from './meow';
+import { User } from './user';
 
 const theme = createMuiTheme({
   typography: {
@@ -55,26 +56,24 @@ const PrivateRoute: React.FC<
   );
 };
 
-const App: React.FC = () => {
-  return (
-    <ThemeProvider theme={theme}>
-      <Provider>
-        <Router>
-          <CssBaseline />
-          <Header />
-          <Container style={{ paddingTop: 16 }}>
-            <Switch>
-              <Route path="/" exact component={Feed} />
-              <PrivateRoute path="/logout" component={Logout} />
-              <Route path="/login" component={Login} />
-              <Route path="/:username/:id" component={SingleMeow} />
-              <Route path="/:username" component={User} />
-            </Switch>
-          </Container>
-        </Router>
-      </Provider>
-    </ThemeProvider>
-  );
-};
+const App: React.FC = () => (
+  <ThemeProvider theme={theme}>
+    <Provider>
+      <Router>
+        <CssBaseline />
+        <Header />
+        <Container style={{ paddingTop: 16 }}>
+          <Switch>
+            <Route path="/" exact component={Feed} />
+            <PrivateRoute path="/logout" component={Logout} />
+            <Route path="/login" component={Login} />
+            <Route path="/:username/:id" component={SingleMeow} />
+            <Route path="/:username" component={User} />
+          </Switch>
+        </Container>
+      </Router>
+    </Provider>
+  </ThemeProvider>
+);
 
 export default App;

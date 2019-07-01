@@ -10,13 +10,13 @@ import gql from 'graphql-tag';
 import React, { useState, useCallback } from 'react';
 import { useMutation } from 'react-apollo-hooks';
 import { Redirect } from 'react-router-dom';
-import { useDispatch } from './UserState';
-// eslint-disable-next-line
-import { login, login_login } from './types/login';
-import { register as REGISTER_TYPE, register_signup } from './types/register';
 import { tryCatch, rightTask } from 'fp-ts/es6/TaskEither';
 import { Task } from 'fp-ts/es6/Task';
 import useForm from 'react-hook-form';
+
+import { useDispatch } from './user-state';
+import { login as LOGIN_TYPE, login_login } from './types/login';
+import { register as REGISTER_TYPE, register_signup } from './types/register';
 
 const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
@@ -62,7 +62,7 @@ interface Data {
 export const Login = () => {
   const { register, handleSubmit, errors } = useForm<Data>();
   const classes = useStyles({});
-  const login = useMutation<login>(LOGIN);
+  const login = useMutation<LOGIN_TYPE>(LOGIN);
   const doRegister = useMutation<REGISTER_TYPE>(REGISTER);
   const [redirect, setRedirect] = useState(false);
   const [error, setError] = useState('');
@@ -76,7 +76,9 @@ export const Login = () => {
         setRedirect(true);
       };
 
-      const mutate = (): Promise<{ result: { data: REGISTER_TYPE | login } }> =>
+      const mutate = (): Promise<{
+        result: { data: REGISTER_TYPE | LOGIN_TYPE };
+      }> =>
         isRegister
           ? doRegister({ variables: { username, password } })
           : login({ variables: { username, password } });
@@ -87,15 +89,14 @@ export const Login = () => {
       );
 
       // I can't get typechecking working here >:(
-      const sendDispatch = (result: any) => {
-        return rightTask<string, void>(
+      const sendDispatch = (result: any) =>
+        rightTask<string, void>(
           new Task(async () =>
             dispatchLogin(
               result.data.signup ? result.data.signup : result.data.login
             )
           )
         );
-      };
 
       return sendMutation
         .chain(sendDispatch)

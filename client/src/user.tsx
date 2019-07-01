@@ -1,13 +1,14 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo-hooks';
-import { getuser } from './types/getuser';
 import { RouteComponentProps } from 'react-router';
 import { Grid, Card, CardContent, Typography } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/styles';
-import { Meow } from './Meow';
-import { Loader } from './Loader';
 import ReactFitText from 'react-fittext';
+
+import { Meow } from './meow';
+import { Loader } from './loader';
+import { getuser } from './types/getuser';
 
 const GET_USER = gql`
   query getuser($username: String!) {

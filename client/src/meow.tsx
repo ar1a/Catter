@@ -10,13 +10,14 @@ import {
 } from '@material-ui/core';
 import { Redirect, RouteComponentProps } from 'react-router';
 import gql from 'graphql-tag';
+import { useQuery, useMutation } from 'react-apollo-hooks';
+import { fade } from '@material-ui/core/styles';
+
 import { getmeow } from './types/getmeow';
 import { deletemeow } from './types/deletemeow';
-import { useQuery, useMutation } from 'react-apollo-hooks';
-import { Loader } from './Loader';
-import { fade } from '@material-ui/core/styles';
-import { useUserState } from './UserState';
-import { AdapterLink } from './Utils';
+import { Loader } from './loader';
+import { useUserState } from './user-state';
+import { AdapterLink } from './utils';
 
 const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
   const [toMeow, setToMeow] = useState(false);

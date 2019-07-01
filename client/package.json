@@ -29,6 +29,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "lint": "eslint 'src/**/*.tsx'",
     "generate": "apollo codegen:generate --target typescript --endpoint=http://localhost:4000 types"
   },
   "eslintConfig": {
@@ -50,7 +51,19 @@
     "graphql": "^14.3.1"
   },
   "devDependencies": {
+    "@types/ramda": "types/npm-ramda#dist",
     "@types/react-router-dom": "^4.3.3",
-    "@types/ramda": "types/npm-ramda#dist"
+    "@typescript-eslint/eslint-plugin": "1.x",
+    "@typescript-eslint/parser": "1.x",
+    "babel-eslint": "10.x",
+    "eslint": "5.x",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-config-react-app": "^4.0.1",
+    "eslint-plugin-flowtype": "2.x",
+    "eslint-plugin-import": "2.x",
+    "eslint-plugin-jsx-a11y": "6.x",
+    "eslint-plugin-react": "7.x",
+    "eslint-plugin-react-hooks": "1.x",
+    "eslint-plugin-unicorn": "^9.1.1"
   }
 }

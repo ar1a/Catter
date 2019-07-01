@@ -1,11 +1,12 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { getfeed, getfeed_feed } from './types/getfeed';
 import { useQuery } from 'react-apollo-hooks';
-import { Meow } from './Meow';
-import { CreateMeow } from './CreateMeow';
-import { useUserState } from './UserState';
-import { Loader } from './Loader';
+
+import { getfeed, getfeed_feed } from './types/getfeed';
+import { Meow } from './meow';
+import { CreateMeow } from './create-meow';
+import { useUserState } from './user-state';
+import { Loader } from './loader';
 
 const GET_FEED = gql`
   query getfeed {

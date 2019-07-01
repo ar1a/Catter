@@ -53,9 +53,7 @@ export const Provider: React.FC = ({ children }) => {
   );
 };
 
-export const useDispatch = () => {
-  return useContext(dispatchCtx);
-};
+export const useDispatch = () => useContext(dispatchCtx);
 
 export const useUserState = <K extends keyof State>(property: K) => {
   const state = useContext(stateCtx);
