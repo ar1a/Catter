@@ -111,7 +111,7 @@ export const Meow: React.FC<{
         >
           @{username}
         </Typography>
-        <Typography variant="h5" component="div">
+        <Typography variant="h5" component="p">
           {content}
         </Typography>
       </CardContent>
