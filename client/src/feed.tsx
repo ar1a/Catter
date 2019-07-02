@@ -26,8 +26,7 @@ export const Feed = () => {
     fetchPolicy: 'cache-and-network'
   } as any);
 
-  const token = useUserState('token');
-  const loggedIn = Boolean(token);
+  const loggedIn = Boolean(useUserState('token'));
   if (loading) {
     return <Loader />;
   }
