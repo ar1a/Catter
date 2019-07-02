@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/styles';
 import React from 'react';
 
 import { useUserState } from './user-state';
-import { AdapterLink } from './utils';
+import { ButtonLink } from './utils';
 
 const useStyles = makeStyles(
   createStyles({
@@ -22,17 +22,11 @@ const HeaderButtons = ({
 }) =>
   authorized ? (
     <>
-      <Button color="inherit" component={AdapterLink} to={`/${username}`}>
-        profile
-      </Button>
-      <Button color="inherit" component={AdapterLink} to="/logout">
-        logout
-      </Button>
+      <ButtonLink to={`/${username}`}>profile</ButtonLink>
+      <ButtonLink to="/logout">logout</ButtonLink>
     </>
   ) : (
-    <Button color="inherit" component={AdapterLink} to="/login">
-      login
-    </Button>
+    <ButtonLink to="/login">login</ButtonLink>
   );
 
 export const Header = () => {
@@ -45,9 +39,9 @@ export const Header = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Button size="large" color="inherit" component={AdapterLink} to="/">
+            <ButtonLink size="large" to="/">
               Catter
-            </Button>
+            </ButtonLink>
           </Typography>
           <HeaderButtons authorized={authorized} username={username} />
         </Toolbar>

@@ -17,7 +17,7 @@ import { getmeow } from './types/getmeow';
 import { deletemeow } from './types/deletemeow';
 import { Loader } from './loader';
 import { useUserState } from './user-state';
-import { AdapterLink } from './utils';
+import { ButtonLink } from './utils';
 
 const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
   const [toMeow, setToMeow] = useState(false);
@@ -179,13 +179,7 @@ export const SingleMeow: React.FC<RouteComponentProps<Props>> = ({ match }) => {
     return (
       <div>
         Meow not found!{' '}
-        <Button
-          color="inherit"
-          component={AdapterLink}
-          to={`/${match.params.username}`}
-        >
-          To Profile
-        </Button>
+        <ButtonLink to={`/${match.params.username}`}>To Profile</ButtonLink>
       </div>
     );
   }
