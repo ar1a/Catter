@@ -13,11 +13,33 @@ const useStyles = makeStyles(
   })
 );
 
+const HeaderButtons = ({
+  authorized,
+  username
+}: {
+  authorized: boolean;
+  username: string | null;
+}) =>
+  authorized ? (
+    <>
+      <Button color="inherit" component={AdapterLink} to={`/${username}`}>
+        profile
+      </Button>
+      <Button color="inherit" component={AdapterLink} to="/logout">
+        logout
+      </Button>
+    </>
+  ) : (
+    <Button color="inherit" component={AdapterLink} to="/login">
+      login
+    </Button>
+  );
+
 export const Header = () => {
   const classes = useStyles({});
   const token = useUserState('token');
   const username = useUserState('username');
-  const isAuthorized = Boolean(token);
+  const authorized = Boolean(token);
   return (
     <div>
       <AppBar position="static">
@@ -27,24 +49,7 @@ export const Header = () => {
               Catter
             </Button>
           </Typography>
-          {isAuthorized ? (
-            <>
-              <Button
-                color="inherit"
-                component={AdapterLink}
-                to={`/${username}`}
-              >
-                profile
-              </Button>
-              <Button color="inherit" component={AdapterLink} to="/logout">
-                logout
-              </Button>
-            </>
-          ) : (
-            <Button color="inherit" component={AdapterLink} to="/login">
-              login
-            </Button>
-          )}
+          <HeaderButtons authorized={authorized} username={username} />
         </Toolbar>
       </AppBar>
     </div>
