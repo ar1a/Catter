@@ -37,7 +37,7 @@
     "eslint-plugin-unicorn": "9.1.1",
     "nexus-prisma-generate": "0.3.7",
     "ts-node": "8.3.0",
-    "ts-node-dev": "1.0.0-pre.39",
+    "ts-node-dev": "1.0.0-pre.40",
     "typescript": "3.4.5"
   },
   "resolutions": {
