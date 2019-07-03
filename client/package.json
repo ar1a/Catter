@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@types/ramda": "types/npm-ramda#dist",
-    "@types/react-router-dom": "4.3.3",
+    "@types/react-router-dom": "4.3.4",
     "@typescript-eslint/eslint-plugin": "1.11.0",
     "@typescript-eslint/parser": "1.11.0",
     "babel-eslint": "10.0.1",
