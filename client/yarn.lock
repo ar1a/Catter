@@ -9786,10 +9786,10 @@ react-fittext@1.0.0:
     create-react-class "^15.5.3"
     prop-types "^15.5.10"
 
-react-hook-form@3.11.3:
-  version "3.11.3"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-3.11.3.tgz#732ea0102f6ec912d97d500cc6b993a3f5215f52"
-  integrity sha512-3vcVPHlV3XqhBacaCrj/Tf8dartJHBVTLot9Xol0boK0OLbE9GIuqhGVbWAIdJKMk+cSepL9r6BPdYfhE45CQQ==
+react-hook-form@3.17.2:
+  version "3.17.2"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-3.17.2.tgz#9cc08ba7a3dd0351bee33787818437465eb73d1c"
+  integrity sha512-vkb1WT6CMNxdC76cgsTdC4Le7glns6E2bEj9rJD6ShIG6yl5aqhpKNuNiFnCktQ23hmpgeB4VvpezQdCxNSTLg==
 
 react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.0, react-is@^16.8.1, react-is@^16.8.4:
   version "16.8.6"
