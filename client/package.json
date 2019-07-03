@@ -11,7 +11,7 @@
     "@types/react-dom": "16.8.4",
     "apollo": "2.15.0",
     "apollo-boost": "0.4.3",
-    "fp-ts": "1.19.3",
+    "fp-ts": "2.0.0",
     "graphql": "14.4.1",
     "ramda": "0.26.1",
     "react": "16.8.6",
