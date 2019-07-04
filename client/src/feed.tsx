@@ -21,6 +21,13 @@ const GET_FEED = gql`
         id
         username
       }
+      replyingTo {
+        id
+        author {
+          id
+          username
+        }
+      }
     }
   }
 `;

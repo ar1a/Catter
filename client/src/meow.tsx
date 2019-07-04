@@ -19,14 +19,18 @@ import { likemeow } from './types/likemeow';
 import { Loader } from './loader';
 import { useUserState } from './user-state';
 import { ButtonLink } from './utils';
+import { CreateMeow } from './create-meow';
 
 const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
   const [toMeow, setToMeow] = useState(false);
 
-  const onCardClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setToMeow(true);
-  }, []);
+  const onCardClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setToMeow(true);
+    },
+    [setToMeow]
+  );
 
   return [toMeow, onCardClick];
 };
@@ -65,6 +69,10 @@ export const Meow: React.FC<{
     content: string;
     author: { username: string };
     likedBy: { username: string }[];
+    replyingTo?: {
+      id: string;
+      author: { username: string; id: string };
+    } | null;
   };
   noRedirect?: boolean;
   noUserRedirect?: boolean;
@@ -73,7 +81,8 @@ export const Meow: React.FC<{
     id,
     content,
     author: { username },
-    likedBy
+    likedBy,
+    replyingTo
   },
   noRedirect,
   noUserRedirect
@@ -130,6 +139,7 @@ export const Meow: React.FC<{
           className={classes.username}
         >
           @{username}
+          {replyingTo && ` · Replying to @${replyingTo.author.username}`}
         </Typography>
         <Typography variant="h5" component="p">
           {content}
@@ -159,17 +169,29 @@ export const Meow: React.FC<{
 };
 
 const GET_MEOW = gql`
+  fragment meow on Meow {
+    id
+    content
+    author {
+      id
+      username
+    }
+    likedBy {
+      id
+      username
+    }
+  }
   query getmeow($id: ID!) {
     meow(where: { id: $id }) {
-      id
-      content
-      author {
-        id
-        username
+      ...meow
+      replies {
+        ...meow
+        replyingTo {
+          ...meow
+        }
       }
-      likedBy {
-        id
-        username
+      replyingTo {
+        ...meow
       }
     }
   }
@@ -227,5 +249,16 @@ export const SingleMeow: React.FC<RouteComponentProps<Props>> = ({ match }) => {
     );
   }
 
-  return <Meow meow={data.meow} noRedirect />;
+  return (
+    <>
+      {data.meow.replyingTo && (
+        <Meow meow={data.meow.replyingTo} key={'replyingTo' + data.meow.id} />
+      )}
+      <Meow meow={data.meow} key={'single' + data.meow.id} noRedirect />
+      <CreateMeow replyingTo={data.meow.id} />
+      {data.meow.replies.map(reply => (
+        <Meow meow={reply} key={'replies' + reply.id} />
+      ))}
+    </>
+  );
 };

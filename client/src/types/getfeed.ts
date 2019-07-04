@@ -18,12 +18,25 @@ export interface getfeed_feed_likedBy {
   username: string;
 }
 
+export interface getfeed_feed_replyingTo_author {
+  __typename: "User";
+  id: string;
+  username: string;
+}
+
+export interface getfeed_feed_replyingTo {
+  __typename: "Meow";
+  id: string;
+  author: getfeed_feed_replyingTo_author;
+}
+
 export interface getfeed_feed {
   __typename: "Meow";
   id: string;
   content: string;
   author: getfeed_feed_author;
   likedBy: getfeed_feed_likedBy[];
+  replyingTo: getfeed_feed_replyingTo | null;
 }
 
 export interface getfeed {

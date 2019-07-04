@@ -25,6 +25,13 @@ const GET_USER = gql`
           id
           username
         }
+        replyingTo {
+          id
+          author {
+            id
+            username
+          }
+        }
       }
     }
   }

@@ -26,12 +26,18 @@ const useStyles = makeStyles(
 );
 
 const POST_MEOW = gql`
-  mutation postmeow($content: String!) {
-    postMeow(content: $content) {
+  mutation postmeow($content: String!, $replyingTo: ID) {
+    postMeow(content: $content, replyingTo: $replyingTo) {
       id
       author {
         id
         username
+      }
+      replyingTo {
+        id
+        replies {
+          id
+        }
       }
     }
   }
@@ -41,20 +47,23 @@ interface Data {
   content: string;
 }
 
-export const CreateMeow = () => {
+export const CreateMeow: React.FC<{ replyingTo?: string }> = ({
+  replyingTo
+}) => {
   const classes = useStyles();
 
   const { register, handleSubmit, errors, reset } = useForm<Data>();
   const postMeow = useMutation<postmeow>(POST_MEOW, {
-    refetchQueries: ['getfeed']
+    refetchQueries: ['getfeed', 'getmeow']
   });
 
   const onSubmit = useCallback(
     ({ content }: Data) =>
-      tryCatch(() => postMeow({ variables: { content } }), R.identity)().then(
-        fold(console.error, reset)
-      ),
-    [postMeow, reset]
+      tryCatch(
+        () => postMeow({ variables: { content, replyingTo } }),
+        R.identity
+      )().then(fold(console.error, reset)),
+    [postMeow, reset, replyingTo]
   );
 
   return (
@@ -67,7 +76,7 @@ export const CreateMeow = () => {
             multiline
             fullWidth
             error={Boolean(errors.content)}
-            label="Post Meow"
+            label={replyingTo ? 'Reply to Meow' : 'Post Meow'}
             inputRef={register({ required: true, maxLength: 240 })}
           />
         </CardContent>

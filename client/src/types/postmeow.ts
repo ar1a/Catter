@@ -12,10 +12,22 @@ export interface postmeow_postMeow_author {
   username: string;
 }
 
+export interface postmeow_postMeow_replyingTo_replies {
+  __typename: "Meow";
+  id: string;
+}
+
+export interface postmeow_postMeow_replyingTo {
+  __typename: "Meow";
+  id: string;
+  replies: postmeow_postMeow_replyingTo_replies[];
+}
+
 export interface postmeow_postMeow {
   __typename: "Meow";
   id: string;
   author: postmeow_postMeow_author;
+  replyingTo: postmeow_postMeow_replyingTo | null;
 }
 
 export interface postmeow {
@@ -24,4 +36,5 @@ export interface postmeow {
 
 export interface postmeowVariables {
   content: string;
+  replyingTo?: string | null;
 }
