@@ -1191,10 +1191,10 @@ forwarded@~0.1.2:
   resolved "https://registry.yarnpkg.com/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
   integrity sha1-mMI9qxF1ZXuMBXPozszZGw/xjIQ=
 
-fp-ts@^1.19.3:
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-1.19.3.tgz#261a60d1088fbff01f91256f91d21d0caaaaa96f"
-  integrity sha512-H5KQDspykdHuztLTg+ajGN0Z2qUjcEf3Ybxc6hLt0k7/zPkn29XnKnxlBPyW2XIddWrGaJBzBl4VLYOtk39yZg==
+fp-ts@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.0.0.tgz#7db4d68ea95c0c2efedaafc02e0579e47a46cbeb"
+  integrity sha512-oz8L+EZiztqGVLhgdL+63b4hpfdJkEKH/4vRoS/AuUwYqmn7vHAzWMu1jtoYfB0pPxo5UioWVT2XOuftyivUSQ==
 
 fresh@0.5.2:
   version "0.5.2"
