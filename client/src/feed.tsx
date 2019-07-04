@@ -17,6 +17,10 @@ const GET_FEED = gql`
         id
         username
       }
+      likedBy {
+        id
+        username
+      }
     }
   }
 `;

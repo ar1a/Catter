@@ -15,6 +15,7 @@ import { fade } from '@material-ui/core/styles';
 
 import { getmeow } from './types/getmeow';
 import { deletemeow } from './types/deletemeow';
+import { likemeow } from './types/likemeow';
 import { Loader } from './loader';
 import { useUserState } from './user-state';
 import { ButtonLink } from './utils';
@@ -59,14 +60,20 @@ const useStyles = makeStyles(theme =>
 );
 
 export const Meow: React.FC<{
-  meow: { id: string; content: string; author: { username: string } };
+  meow: {
+    id: string;
+    content: string;
+    author: { username: string };
+    likedBy: { username: string }[];
+  };
   noRedirect?: boolean;
   noUserRedirect?: boolean;
 }> = ({
   meow: {
     id,
     content,
-    author: { username }
+    author: { username },
+    likedBy
   },
   noRedirect,
   noUserRedirect
@@ -80,6 +87,11 @@ export const Meow: React.FC<{
     variables: { id },
     refetchQueries: ['getmeow', 'getuser', 'getfeed']
   });
+  const likeMeow = useMutation<likemeow>(LIKE_MEOW, { variables: { id } });
+
+  const likes = `Like (${likedBy.length})`;
+
+  const hasLiked = likedBy.filter(u => u.username === myUsername).length > 0;
 
   const onDeleteClick = useCallback(
     (e: React.MouseEvent) => {
@@ -87,6 +99,14 @@ export const Meow: React.FC<{
       deleteMeow();
     },
     [deleteMeow]
+  );
+
+  const onLikeClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      likeMeow();
+    },
+    [likeMeow]
   );
 
   if (!noRedirect) {
@@ -115,8 +135,15 @@ export const Meow: React.FC<{
           {content}
         </Typography>
       </CardContent>
-      {myUsername && myUsername === username && (
-        <CardActions>
+      <CardActions>
+        <Button
+          size="medium"
+          color={hasLiked ? 'primary' : undefined}
+          onClick={onLikeClick}
+        >
+          {likes}
+        </Button>
+        {myUsername && myUsername === username && (
           <Button
             size="small"
             color="secondary"
@@ -125,8 +152,8 @@ export const Meow: React.FC<{
           >
             Delete
           </Button>
-        </CardActions>
-      )}
+        )}
+      </CardActions>
     </Card>
   );
 };
@@ -140,6 +167,10 @@ const GET_MEOW = gql`
         id
         username
       }
+      likedBy {
+        id
+        username
+      }
     }
   }
 `;
@@ -148,6 +179,18 @@ const DELETE_MEOW = gql`
   mutation deletemeow($id: ID!) {
     deleteMeow(id: $id) {
       id
+    }
+  }
+`;
+
+const LIKE_MEOW = gql`
+  mutation likemeow($id: ID!) {
+    likeMeow(id: $id) {
+      id
+      likedBy {
+        id
+        username
+      }
     }
   }
 `;

@@ -12,11 +12,18 @@ export interface getmeow_meow_author {
   username: string;
 }
 
+export interface getmeow_meow_likedBy {
+  __typename: "User";
+  id: string;
+  username: string;
+}
+
 export interface getmeow_meow {
   __typename: "Meow";
   id: string;
   content: string;
   author: getmeow_meow_author;
+  likedBy: getmeow_meow_likedBy[];
 }
 
 export interface getmeow {

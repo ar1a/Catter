@@ -12,11 +12,18 @@ export interface getfeed_feed_author {
   username: string;
 }
 
+export interface getfeed_feed_likedBy {
+  __typename: "User";
+  id: string;
+  username: string;
+}
+
 export interface getfeed_feed {
   __typename: "Meow";
   id: string;
   content: string;
   author: getfeed_feed_author;
+  likedBy: getfeed_feed_likedBy[];
 }
 
 export interface getfeed {
