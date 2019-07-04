@@ -10,10 +10,12 @@ import {
   tryCatch,
   leftTask,
   rightTask,
-  TaskEither
+  TaskEither,
+  chain,
+  map
 } from 'fp-ts/lib/TaskEither';
-import { left, right } from 'fp-ts/lib/Either';
-import { Task } from 'fp-ts/lib/Task';
+import { left, right, fold } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/pipeable';
 
 import { Context, APP_SECRET, getUserId } from '../utils';
 import { User } from '../generated/prisma-client';
@@ -46,13 +48,9 @@ const constant = <T>(a: T) => (_: any) => a;
 const fromNullablePromise = <Err, Value>(
   f: () => Promise<Value | null>,
   onNull: Err
-): TaskEither<Err, Value> =>
-  new TaskEither(
-    new Task(() =>
-      f().then(valueOrNull =>
-        valueOrNull === null ? left(onNull) : right(valueOrNull)
-      )
-    )
+): TaskEither<Err, Value> => async () =>
+  f().then(valueOrNull =>
+    valueOrNull === null ? left(onNull) : right(valueOrNull)
   );
 const getToken = (user: User) => ({
   token: sign({ userId: user.id }, APP_SECRET),
@@ -99,10 +97,8 @@ export const Mutation = prismaObjectType({
             suggestions_
           ]);
           return score < 3
-            ? leftTask<string, Schema>(new Task(async () => err))
-            : rightTask<string, Schema>(
-                new Task(async () => ({ username, password }))
-              );
+            ? leftTask<string, Schema>(async () => err)
+            : rightTask<string, Schema>(async () => ({ username, password }));
         };
 
         const hashPassword = ({ password }: Schema) =>
@@ -114,19 +110,24 @@ export const Mutation = prismaObjectType({
             (a: Error) => a.message
           );
 
-        return validateSchema
-          .chain(validatePassword)
-          .chain(({ username, password }) =>
-            hashPassword({ username, password }).chain(createUser(username))
-          )
-          .map(getToken)
-          .fold(
+        return pipe(
+          validateSchema,
+          chain(validatePassword),
+          chain(({ username, password }) =>
+            pipe(
+              hashPassword({ username, password }),
+              chain(createUser(username))
+            )
+          ),
+          map(getToken)
+        )().then(
+          fold(
             err => {
               throw new Error(err);
             },
             a => a
           )
-          .run();
+        );
       }
     });
 
@@ -148,16 +149,18 @@ export const Mutation = prismaObjectType({
             'Password invalid'
           );
 
-        return getUser
-          .chain(verifyPassword)
-          .map(getToken)
-          .fold(
+        return pipe(
+          getUser,
+          chain(verifyPassword),
+          map(getToken)
+        )().then(
+          fold(
             err => {
               throw new Error(err);
             },
             a => a
           )
-          .run();
+        );
       }
     });
 
