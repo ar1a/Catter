@@ -106,10 +106,6 @@ export const Login = () => {
           fold(setError, a => a)
         )
       );
-      /* return sendMutation
-       *   .chain(sendDispatch)
-       *   .fold(setError, a => a)
-       *   .run(); */
     },
     [login, dispatch, isRegister, doRegister]
   );
