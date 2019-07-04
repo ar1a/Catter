@@ -2,12 +2,14 @@ type User {
   id: ID! @id
   username: String! @unique
   password: String!
-  meows: [Meow!]!
+  meows: [Meow!]! @relation(name: "MeowRelation")
+  likes: [Meow!]! @relation(name: "LikeRelation")
 }
 
 type Meow {
   id: ID! @id
   content: String!
-  author: User! @relation(link: INLINE)
+  author: User! @relation(link: INLINE, name: "MeowRelation")
   createdAt: DateTime! @createdAt
+  likedBy: [User!]! @relation(link: TABLE, name: "LikeRelation")
 }

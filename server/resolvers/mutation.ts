@@ -16,9 +16,10 @@ import {
 } from 'fp-ts/lib/TaskEither';
 import { left, right, fold } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/pipeable';
+import { filter, isEmpty } from 'fp-ts/lib/Array';
 
 import { Context, APP_SECRET, getUserId } from '../utils';
-import { User } from '../generated/prisma-client';
+import { User, Meow } from '../generated/prisma-client';
 
 const signupSchema = yup.object().shape({
   username: yup
@@ -183,6 +184,55 @@ export const Mutation = prismaObjectType({
       nullable: true,
       args: { id: idArg() },
       resolve: (_, { id }, ctx: Context) => ctx.prisma.deleteMeow({ id })
+    });
+
+    t.field('likeMeow', {
+      type: 'Meow',
+      nullable: true,
+      args: { id: idArg() },
+      resolve: async (_, { id }, ctx: Context) => {
+        const userId = getUserId(ctx);
+
+        const getLikedBy = fromNullablePromise<string, User[]>(
+          () => ctx.prisma.meow({ id }).likedBy(),
+          'Meow does not exist'
+        );
+
+        const isMeowLiked = (us: User[]) =>
+          !pipe(
+            us,
+            filter(x => x.id === userId),
+            isEmpty
+          );
+
+        const updateMeow = (isLiked: boolean): TaskEither<string, Meow> =>
+          isLiked
+            ? rightTask(async () =>
+                ctx.prisma.updateMeow({
+                  data: { likedBy: { disconnect: { id: userId } } },
+                  where: { id }
+                })
+              )
+            : rightTask(async () =>
+                ctx.prisma.updateMeow({
+                  data: { likedBy: { connect: { id: userId } } },
+                  where: { id }
+                })
+              );
+
+        return pipe(
+          getLikedBy,
+          map(isMeowLiked),
+          chain(updateMeow)
+        )().then(
+          fold(
+            error => {
+              throw new Error(error);
+            },
+            a => a
+          )
+        );
+      }
     });
   }
 });
