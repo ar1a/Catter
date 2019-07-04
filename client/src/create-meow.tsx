@@ -12,6 +12,7 @@ import useForm from 'react-hook-form';
 import gql from 'graphql-tag';
 import { useMutation } from 'react-apollo-hooks';
 import { tryCatch } from 'fp-ts/es6/TaskEither';
+import { fold } from 'fp-ts/es6/Either';
 import * as R from 'ramda';
 
 import { postmeow } from './types/postmeow';
@@ -50,9 +51,9 @@ export const CreateMeow = () => {
 
   const onSubmit = useCallback(
     ({ content }: Data) =>
-      tryCatch(() => postMeow({ variables: { content } }), R.identity)
-        .fold(console.error, reset)
-        .run(),
+      tryCatch(() => postMeow({ variables: { content } }), R.identity)().then(
+        fold(console.error, reset)
+      ),
     [postMeow, reset]
   );
 

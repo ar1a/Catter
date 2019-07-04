@@ -10,8 +10,9 @@ import gql from 'graphql-tag';
 import React, { useState, useCallback } from 'react';
 import { useMutation } from 'react-apollo-hooks';
 import { Redirect } from 'react-router-dom';
-import { tryCatch, rightTask } from 'fp-ts/es6/TaskEither';
-import { Task } from 'fp-ts/es6/Task';
+import { chain, tryCatch, rightTask } from 'fp-ts/es6/TaskEither';
+import { fold } from 'fp-ts/es6/Either';
+import { pipe } from 'fp-ts/es6/pipeable';
 import useForm from 'react-hook-form';
 
 import { useDispatch } from './user-state';
@@ -90,18 +91,25 @@ export const Login = () => {
 
       // I can't get typechecking working here >:(
       const sendDispatch = (result: any) =>
-        rightTask<string, void>(
-          new Task(async () =>
-            dispatchLogin(
-              result.data.signup ? result.data.signup : result.data.login
-            )
+        rightTask<string, void>(async () =>
+          dispatchLogin(
+            result.data.signup ? result.data.signup : result.data.login
           )
         );
 
-      return sendMutation
-        .chain(sendDispatch)
-        .fold(setError, a => a)
-        .run();
+      return pipe(
+        sendMutation,
+        chain(sendDispatch)
+      )().then(e =>
+        pipe(
+          e,
+          fold(setError, a => a)
+        )
+      );
+      /* return sendMutation
+       *   .chain(sendDispatch)
+       *   .fold(setError, a => a)
+       *   .run(); */
     },
     [login, dispatch, isRegister, doRegister]
   );
