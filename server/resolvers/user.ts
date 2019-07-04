@@ -10,9 +10,12 @@ export const User = prismaObjectType({
     t.list.field('meows', {
       type: 'Meow',
       resolve: (parent: RootValue<'User'>, __, ctx: Context) =>
-        ctx.prisma
-          .user({ username: parent.username })
-          .meows({ orderBy: 'createdAt_DESC' })
+        ctx.prisma.user({ id: parent.id }).meows({ orderBy: 'createdAt_DESC' })
+    });
+    t.list.field('likes', {
+      type: 'Meow',
+      resolve: (parent: RootValue<'User'>, __, ctx: Context) =>
+        ctx.prisma.user({ id: parent.id }).likes({ orderBy: 'createdAt_DESC' })
     });
   }
 });
