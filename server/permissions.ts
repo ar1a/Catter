@@ -22,6 +22,7 @@ export default shield({
   },
   Mutation: {
     postMeow: isAuthenticatedUser,
-    deleteMeow: isAuthenticatedAndOwnsMeow
+    deleteMeow: isAuthenticatedAndOwnsMeow,
+    likeMeow: isAuthenticatedUser
   }
 });
