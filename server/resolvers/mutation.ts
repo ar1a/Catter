@@ -168,13 +168,15 @@ export const Mutation = prismaObjectType({
     t.field('postMeow', {
       type: 'Meow',
       args: {
-        content: stringArg()
+        content: stringArg(),
+        replyingTo: idArg({ required: false })
       },
-      resolve: (_, { content }, ctx: Context) => {
+      resolve: (_, { content, replyingTo }, ctx: Context) => {
         const userId = getUserId(ctx);
         return ctx.prisma.createMeow({
           content,
-          author: { connect: { id: userId } }
+          author: { connect: { id: userId } },
+          replyingTo: replyingTo ? { connect: { id: replyingTo } } : undefined
         });
       }
     });

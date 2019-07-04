@@ -12,4 +12,6 @@ type Meow {
   author: User! @relation(link: INLINE, name: "MeowRelation")
   createdAt: DateTime! @createdAt
   likedBy: [User!]! @relation(link: TABLE, name: "LikeRelation")
+  replies: [Meow!]! @relation(name: "ReplyRelation")
+  replyingTo: Meow @relation(name: "ReplyRelation")
 }
