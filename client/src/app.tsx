@@ -16,6 +16,7 @@ import './jost/jost.css';
 import { Login } from './login';
 import { Logout } from './logout';
 import { Provider, useUserState } from './user-state';
+import { SettingsName } from './settings-name';
 import { Feed } from './feed';
 import { SingleMeow } from './meow';
 import { User } from './user';
@@ -67,6 +68,7 @@ const App: React.FC = () => (
             <Route path="/" exact component={Feed} />
             <PrivateRoute path="/logout" component={Logout} />
             <Route path="/login" component={Login} />
+            <PrivateRoute path="/settings/name" component={SettingsName} />
             <Route path="/:username/:id" component={SingleMeow} />
             <Route path="/:username" component={User} />
           </Switch>

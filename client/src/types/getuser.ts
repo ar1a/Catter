@@ -45,6 +45,7 @@ export interface getuser_user_meows {
 export interface getuser_user {
   __typename: "User";
   id: string;
+  name: string;
   meows: getuser_user_meows[];
 }
 

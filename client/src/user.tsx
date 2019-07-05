@@ -5,15 +5,20 @@ import { RouteComponentProps } from 'react-router';
 import { Grid, Card, CardContent, Typography } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/styles';
 import ReactFitText from 'react-fittext';
+import { Link } from 'react-router-dom';
+import ConditionalWrap from 'conditional-wrap';
 
 import { Meow } from './meow';
 import { Loader } from './loader';
 import { getuser } from './types/getuser';
+import { useUserState } from './user-state';
 
 const GET_USER = gql`
   query getuser($username: String!) {
     user(where: { username: $username }) {
       id
+      name
+
       meows {
         id
         content
@@ -43,7 +48,15 @@ const GET_USER = gql`
 const useStyles = makeStyles(
   createStyles({
     username: {
+      textAlign: 'center',
+      opacity: 0.8
+    },
+    name: {
       textAlign: 'center'
+    },
+    link: {
+      textDecoration: 'none',
+      color: 'inherit'
     }
   })
 );
@@ -54,6 +67,7 @@ export const User: React.FC<RouteComponentProps<{ username: string }>> = ({
   }
 }) => {
   const classes = useStyles({});
+  const myUsername = useUserState('username');
   const { data, error, loading } = useQuery<getuser>(GET_USER, {
     variables: { username },
     fetchPolicy: 'cache-and-network'
@@ -79,7 +93,21 @@ export const User: React.FC<RouteComponentProps<{ username: string }>> = ({
         <Card>
           <CardContent>
             <ReactFitText>
-              <Typography variant="h3" className={classes.username}>
+              <Typography variant="h3" className={classes.name}>
+                <ConditionalWrap
+                  condition={myUsername === username}
+                  wrap={(children: React.ReactNode) => (
+                    <Link to="/settings/name" className={classes.link}>
+                      {children}
+                    </Link>
+                  )}
+                >
+                  {data.user.name || 'INVALID NAME'}
+                </ConditionalWrap>
+              </Typography>
+            </ReactFitText>
+            <ReactFitText>
+              <Typography variant="h5" className={classes.username}>
                 @{username}
               </Typography>
             </ReactFitText>
