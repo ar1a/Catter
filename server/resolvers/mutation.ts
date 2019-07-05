@@ -21,6 +21,12 @@ import { filter, isEmpty } from 'fp-ts/lib/Array';
 import { Context, APP_SECRET, getUserId } from '../utils';
 import { User, Meow } from '../generated/prisma-client';
 
+const nameSchema = yup
+  .string()
+  .required()
+  .trim()
+  .min(3);
+
 const signupSchema = yup.object().shape({
   username: yup
     .string()
@@ -35,11 +41,7 @@ const signupSchema = yup.object().shape({
       test: validate,
       message: '${path} is in blacklist'
     }),
-  name: yup
-    .string()
-    .required()
-    .trim()
-    .min(3),
+  name: nameSchema,
   password: yup.string().required()
 });
 
@@ -244,6 +246,42 @@ export const Mutation = prismaObjectType({
           getLikedBy,
           map(isMeowLiked),
           chain(updateMeow)
+        )().then(
+          fold(
+            error => {
+              throw new Error(error);
+            },
+            a => a
+          )
+        );
+      }
+    });
+
+    t.field('setName', {
+      type: 'User',
+      args: {
+        name: stringArg()
+      },
+      resolve: (_, args, ctx: Context) => {
+        const id = getUserId(ctx);
+        const validateSchema = tryCatch(
+          () => nameSchema.validate(args.name),
+          (a: Error) => a.message
+        );
+
+        const updateUser = (name: string) =>
+          tryCatch(
+            () =>
+              ctx.prisma.updateUser({
+                where: { id },
+                data: { name }
+              }),
+            (a: Error) => a.message
+          );
+
+        return pipe(
+          validateSchema,
+          chain(updateUser)
         )().then(
           fold(
             error => {
