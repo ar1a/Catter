@@ -8,7 +8,7 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000',
+  uri: '/graphql',
   request: operation => {
     const token = localStorage.getItem('token');
     if (token) {

@@ -2,7 +2,8 @@
   "compilerOptions": {
     "sourceMap": true,
     "outDir": "dist",
-    "lib": ["esnext", "dom"]
+    "lib": ["esnext", "dom"],
+    "skipLibCheck": true
   },
   "include": ["**/*.ts"]
 }

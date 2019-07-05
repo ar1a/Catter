@@ -33,6 +33,7 @@
     "lint": "eslint 'src/**/*.tsx'",
     "generate": "apollo codegen:generate --target typescript --endpoint=http://localhost:4000 types"
   },
+  "proxy": "http://localhost:4000",
   "eslintConfig": {
     "extends": "react-app"
   },

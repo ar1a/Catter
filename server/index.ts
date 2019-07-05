@@ -27,4 +27,10 @@ const server = new GraphQLServer({
 });
 
 // eslint-disable-next-line no-console
-server.start(() => console.log('Server running on http://localhost:4000'));
+server.start(
+  {
+    endpoint: '/graphql',
+    playground: process.env.NODE_ENV == 'production' ? false : '/'
+  },
+  () => console.log('Server running on http://localhost:4000')
+);
