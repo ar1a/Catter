@@ -6,7 +6,7 @@ import { Context } from '../utils';
 export const User = prismaObjectType({
   name: 'User',
   definition(t) {
-    t.prismaFields(['id', 'username']);
+    t.prismaFields(['id', 'username', 'name']);
     t.list.field('meows', {
       type: 'Meow',
       resolve: (parent: RootValue<'User'>, __, ctx: Context) =>

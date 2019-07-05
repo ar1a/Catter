@@ -35,11 +35,17 @@ const signupSchema = yup.object().shape({
       test: validate,
       message: '${path} is in blacklist'
     }),
+  name: yup
+    .string()
+    .required()
+    .trim()
+    .min(3),
   password: yup.string().required()
 });
 
 interface Schema {
   username: string;
+  name: string;
   password: string;
 }
 
@@ -65,7 +71,8 @@ export const Mutation = prismaObjectType({
       type: 'AuthPayload',
       args: {
         username: stringArg(),
-        password: stringArg()
+        password: stringArg(),
+        name: stringArg()
       },
       resolve: async (_, args, ctx: Context) => {
         const validateSchema = tryCatch(
@@ -73,7 +80,7 @@ export const Mutation = prismaObjectType({
           (a: Error) => a.message
         );
 
-        const validatePassword = ({ username, password }) => {
+        const validatePassword = ({ username, password, name }) => {
           const {
             score,
             feedback: { suggestions, warning }
@@ -99,25 +106,36 @@ export const Mutation = prismaObjectType({
           ]);
           return score < 3
             ? leftTask<string, Schema>(async () => err)
-            : rightTask<string, Schema>(async () => ({ username, password }));
+            : rightTask<string, Schema>(async () => ({
+                username,
+                password,
+                name
+              }));
         };
 
         const hashPassword = ({ password }: Schema) =>
           tryCatch(() => hash(password), constant('UNREACHABLE ID: 5'));
 
-        const createUser = (username: string) => (hashedPassword: null) =>
+        const createUser = (username: string, name: string) => (
+          hashedPassword: null
+        ) =>
           tryCatch(
-            () => ctx.prisma.createUser({ username, password: hashedPassword }),
+            () =>
+              ctx.prisma.createUser({
+                username,
+                password: hashedPassword,
+                name
+              }),
             (a: Error) => a.message
           );
 
         return pipe(
           validateSchema,
           chain(validatePassword),
-          chain(({ username, password }) =>
+          chain(({ username, password, name }) =>
             pipe(
-              hashPassword({ username, password }),
-              chain(createUser(username))
+              hashPassword({ username, password, name }),
+              chain(createUser(username, name))
             )
           ),
           map(getToken)

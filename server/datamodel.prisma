@@ -1,6 +1,7 @@
 type User {
   id: ID! @id
   username: String! @unique
+  name: String!
   password: String!
   meows: [Meow!]! @relation(name: "MeowRelation")
   likes: [Meow!]! @relation(name: "LikeRelation")
