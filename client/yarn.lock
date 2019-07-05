@@ -3496,7 +3496,7 @@ concat-stream@^1.5.0:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-conditional-wrap@^1.0.0:
+conditional-wrap@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/conditional-wrap/-/conditional-wrap-1.0.0.tgz#e97ea144b4f5b03819fe0e3c8be2f3d7f37d10ea"
   integrity sha512-vjSB8ARvV+b4q5BbdO6aOpPRfjQdfnKEZZN0H5v8F1X+fQ+X1/LV+yWx3CSZaS+rLGiwFD3Xp086bB9qHu0aaw==
