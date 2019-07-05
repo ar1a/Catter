@@ -10,12 +10,14 @@ export interface meow_author {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface meow_likedBy {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface meow {

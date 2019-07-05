@@ -10,18 +10,21 @@ export interface getuser_user_meows_author {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getuser_user_meows_likedBy {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getuser_user_meows_replyingTo_author {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getuser_user_meows_replyingTo {

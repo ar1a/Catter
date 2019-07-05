@@ -10,11 +10,13 @@ export interface getfeed_feed_author {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getfeed_feed_likedBy {
   __typename: "User";
   id: string;
+  name: string;
   username: string;
 }
 
@@ -22,6 +24,7 @@ export interface getfeed_feed_replyingTo_author {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getfeed_feed_replyingTo {

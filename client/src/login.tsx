@@ -31,8 +31,8 @@ const LOGIN = gql`
 `;
 
 const REGISTER = gql`
-  mutation register($username: String!, $password: String!) {
-    signup(username: $username, password: $password) {
+  mutation register($username: String!, $password: String!, $name: String!) {
+    signup(username: $username, password: $password, name: $name) {
       token
       user {
         id
@@ -57,6 +57,7 @@ const useStyles = makeStyles(
 
 interface Data {
   username: string;
+  name: string;
   password: string;
 }
 
@@ -71,7 +72,7 @@ export const Login = () => {
   const dispatch = useDispatch();
 
   const onSubmit = useCallback(
-    async ({ username, password }: Data) => {
+    async ({ username, password, name }: Data) => {
       const dispatchLogin = ({ token }: register_signup | login_login) => {
         dispatch({ type: 'login', token, username });
         setRedirect(true);
@@ -81,7 +82,7 @@ export const Login = () => {
         result: { data: REGISTER_TYPE | LOGIN_TYPE };
       }> =>
         isRegister
-          ? doRegister({ variables: { username, password } })
+          ? doRegister({ variables: { username, password, name } })
           : login({ variables: { username, password } });
 
       const sendMutation = tryCatch(
@@ -145,6 +146,18 @@ export const Login = () => {
             }}
             variant="outlined"
           />
+          {isRegister && (
+            <TextField
+              label="Name (changeable)"
+              margin="normal"
+              required
+              fullWidth
+              error={Boolean(errors.name)}
+              name="name"
+              inputRef={register({ required: true, minLength: 3 })}
+              variant="outlined"
+            />
+          )}
           <TextField
             label="Password"
             required

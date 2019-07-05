@@ -24,4 +24,5 @@ export interface register {
 export interface registerVariables {
   username: string;
   password: string;
+  name: string;
 }

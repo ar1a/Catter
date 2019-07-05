@@ -16,9 +16,11 @@ const GET_FEED = gql`
       author {
         id
         username
+        name
       }
       likedBy {
         id
+        name
         username
       }
       replyingTo {
@@ -26,6 +28,7 @@ const GET_FEED = gql`
         author {
           id
           username
+          name
         }
       }
     }

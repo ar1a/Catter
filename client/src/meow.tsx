@@ -67,11 +67,11 @@ export const Meow: React.FC<{
   meow: {
     id: string;
     content: string;
-    author: { username: string };
-    likedBy: { username: string }[];
+    author: { username: string; name: string };
+    likedBy: { username: string; name: string }[];
     replyingTo?: {
       id: string;
-      author: { username: string; id: string };
+      author: { username: string; id: string; name: string };
     } | null;
   };
   noRedirect?: boolean;
@@ -80,7 +80,7 @@ export const Meow: React.FC<{
   meow: {
     id,
     content,
-    author: { username },
+    author: { username, name },
     likedBy,
     replyingTo
   },
@@ -138,7 +138,7 @@ export const Meow: React.FC<{
           onClick={onUserClick}
           className={classes.username}
         >
-          @{username}
+          {name || 'INVALID NAME'} · @{username}
           {replyingTo && ` · Replying to @${replyingTo.author.username}`}
         </Typography>
         <Typography variant="h5" component="p">
@@ -175,10 +175,12 @@ const GET_MEOW = gql`
     author {
       id
       username
+      name
     }
     likedBy {
       id
       username
+      name
     }
   }
   query getmeow($id: ID!) {
@@ -212,6 +214,7 @@ const LIKE_MEOW = gql`
       likedBy {
         id
         username
+        name
       }
     }
   }

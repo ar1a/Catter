@@ -10,36 +10,42 @@ export interface getmeow_meow_author {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getmeow_meow_likedBy {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getmeow_meow_replies_author {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getmeow_meow_replies_likedBy {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getmeow_meow_replies_replyingTo_author {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getmeow_meow_replies_replyingTo_likedBy {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getmeow_meow_replies_replyingTo {
@@ -63,12 +69,14 @@ export interface getmeow_meow_replyingTo_author {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getmeow_meow_replyingTo_likedBy {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface getmeow_meow_replyingTo {

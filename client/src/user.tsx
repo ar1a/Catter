@@ -20,16 +20,19 @@ const GET_USER = gql`
         author {
           id
           username
+          name
         }
         likedBy {
           id
           username
+          name
         }
         replyingTo {
           id
           author {
             id
             username
+            name
           }
         }
       }

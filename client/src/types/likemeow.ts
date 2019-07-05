@@ -10,6 +10,7 @@ export interface likemeow_likeMeow_likedBy {
   __typename: "User";
   id: string;
   username: string;
+  name: string;
 }
 
 export interface likemeow_likeMeow {
