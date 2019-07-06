@@ -83,7 +83,7 @@ export const CreateMeow: React.FC<{ replyingTo?: string }> = ({
         <CardActions>
           <Button
             size="large"
-            variant="contained"
+            variant="outlined"
             color="primary"
             type="submit"
             style={{ marginLeft: 'auto' }}
