@@ -23,7 +23,7 @@
     "react-hook-form": "3.18.4",
     "react-router-dom": "5.0.1",
     "react-scripts": "3.0.1",
-    "typescript": "3.5.1"
+    "typescript": "3.5.3"
   },
   "scripts": {
     "start": "react-scripts start",
