@@ -40,7 +40,7 @@ const SET_NAME = gql`
 export const SettingsName = () => {
   // TODO: default value set to current name
   const { register, handleSubmit, errors } = useForm<Schema>();
-  const setName = useMutation<setname>(SET_NAME);
+  const [setName] = useMutation<setname>(SET_NAME);
   const [redirect, setRedirect] = useState(false);
   const username = useUserState('username');
   const onSubmit = useCallback(

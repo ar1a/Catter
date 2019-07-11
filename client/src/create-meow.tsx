@@ -53,7 +53,7 @@ export const CreateMeow: React.FC<{ replyingTo?: string }> = ({
   const classes = useStyles();
 
   const { register, handleSubmit, errors, reset } = useForm<Data>();
-  const postMeow = useMutation<postmeow>(POST_MEOW, {
+  const [postMeow, { loading }] = useMutation<postmeow>(POST_MEOW, {
     refetchQueries: ['getfeed', 'getmeow']
   });
 
@@ -87,6 +87,7 @@ export const CreateMeow: React.FC<{ replyingTo?: string }> = ({
             color="primary"
             type="submit"
             style={{ marginLeft: 'auto' }}
+            disabled={loading}
           >
             Post
           </Button>

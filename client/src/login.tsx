@@ -64,8 +64,10 @@ interface Data {
 export const Login = () => {
   const { register, handleSubmit, errors } = useForm<Data>();
   const classes = useStyles({});
-  const login = useMutation<LOGIN_TYPE>(LOGIN);
-  const doRegister = useMutation<REGISTER_TYPE>(REGISTER);
+  const [login, { loading: loginLoading }] = useMutation<LOGIN_TYPE>(LOGIN);
+  const [doRegister, { loading: registerLoading }] = useMutation<REGISTER_TYPE>(
+    REGISTER
+  );
   const [redirect, setRedirect] = useState(false);
   const [error, setError] = useState('');
   const [isRegister, setRegister] = useState(false);
@@ -176,6 +178,7 @@ export const Login = () => {
             color="primary"
             size="large"
             className={classes.submit}
+            disabled={loginLoading || registerLoading}
           >
             {isRegister ? 'Register' : 'Login'}
           </Button>

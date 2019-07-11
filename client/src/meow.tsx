@@ -92,11 +92,17 @@ export const Meow: React.FC<{
   const [toMeow, onCardClick] = useMeowRedirect();
   const [toUser, onUserClick] = useMeowRedirect();
   const myUsername = useUserState('username');
-  const deleteMeow = useMutation<deletemeow>(DELETE_MEOW, {
-    variables: { id },
-    refetchQueries: ['getmeow', 'getuser', 'getfeed']
-  });
-  const likeMeow = useMutation<likemeow>(LIKE_MEOW, { variables: { id } });
+  const [deleteMeow, { loading: deleteLoading }] = useMutation<deletemeow>(
+    DELETE_MEOW,
+    {
+      variables: { id },
+      refetchQueries: ['getmeow', 'getuser', 'getfeed']
+    }
+  );
+  const [likeMeow, { loading: likeLoading }] = useMutation<likemeow>(
+    LIKE_MEOW,
+    { variables: { id } }
+  );
 
   const likes = `Like (${likedBy.length})`;
 
@@ -150,6 +156,7 @@ export const Meow: React.FC<{
           size="medium"
           color={hasLiked ? 'primary' : undefined}
           onClick={onLikeClick}
+          disabled={likeLoading}
         >
           {likes}
         </Button>
@@ -159,6 +166,7 @@ export const Meow: React.FC<{
             color="secondary"
             className={classes.delete}
             onClick={onDeleteClick}
+            disabled={deleteLoading}
           >
             Delete
           </Button>
