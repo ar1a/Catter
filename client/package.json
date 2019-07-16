@@ -9,7 +9,7 @@
     "@types/node": "12.6.2",
     "@types/react": "16.8.23",
     "@types/react-dom": "16.8.4",
-    "apollo": "2.15.0",
+    "apollo": "2.16.0",
     "apollo-boost": "0.4.3",
     "conditional-wrap": "1.0.0",
     "fp-ts": "2.0.1",
