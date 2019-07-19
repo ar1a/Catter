@@ -194,7 +194,7 @@ export const Mutation = prismaObjectType({
       resolve: (_, { content, replyingTo }, ctx: Context) => {
         const userId = getUserId(ctx);
         return ctx.prisma.createMeow({
-          content,
+          content: content.normalize(),
           author: { connect: { id: userId } },
           replyingTo: replyingTo ? { connect: { id: replyingTo } } : undefined
         });
