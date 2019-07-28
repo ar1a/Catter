@@ -41,7 +41,7 @@ export const Header = () => {
   const username = useUserState('username');
   const authorized = Boolean(token);
   return (
-    <nav className="flex items-center justify-between flex-wrap bg-blue-500 px-6 py-4">
+    <nav className="flex items-center justify-between flex-wrap bg-blue-500 px-6 py-4 shadow-md">
       <div className="mr-6 text-white">
         <Link to="/" className=" flex items-center flex-shrink-0">
           <svg

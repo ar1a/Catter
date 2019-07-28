@@ -1,19 +1,12 @@
-import {
-  Button,
-  Container,
-  TextField,
-  Typography,
-  InputAdornment
-} from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/styles';
 import gql from 'graphql-tag';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useMutation } from 'react-apollo-hooks';
 import { Redirect } from 'react-router-dom';
 import { chain, tryCatch, rightTask } from 'fp-ts/es6/TaskEither';
 import { fold } from 'fp-ts/es6/Either';
 import { pipe } from 'fp-ts/es6/pipeable';
 import useForm from 'react-hook-form';
+import classNames from 'classnames';
 
 import { useDispatch } from './user-state';
 import { login as LOGIN_TYPE, login_login } from './types/login';
@@ -41,20 +34,6 @@ const REGISTER = gql`
   }
 `;
 
-const useStyles = makeStyles(
-  createStyles({
-    paper: {
-      marginTop: 64,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    },
-    submit: {
-      margin: '24px 0px'
-    }
-  })
-);
-
 interface Data {
   username: string;
   name: string;
@@ -62,8 +41,9 @@ interface Data {
 }
 
 export const Login = () => {
-  const { register, handleSubmit, errors } = useForm<Data>();
-  const classes = useStyles({});
+  const { unregister, register, handleSubmit, errors, clearError } = useForm<
+    Data
+  >();
   const [login, { loading: loginLoading }] = useMutation<LOGIN_TYPE>(LOGIN);
   const [doRegister, { loading: registerLoading }] = useMutation<REGISTER_TYPE>(
     REGISTER
@@ -72,6 +52,13 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [isRegister, setRegister] = useState(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!isRegister) {
+      unregister('name');
+      clearError('name');
+    }
+  }, [isRegister, unregister, clearError]);
 
   const onSubmit = useCallback(
     async ({ username, password, name }: Data) => {
@@ -121,77 +108,146 @@ export const Login = () => {
   if (redirect) {
     return <Redirect to="/" />;
   }
-
   return (
-    <Container maxWidth="xs">
-      <div className={classes.paper}>
-        <Typography variant="h4" gutterBottom>
-          {(isRegister && 'Register') || 'Login'}
-        </Typography>
-        <Typography variant="subtitle1" color="error" gutterBottom>
-          {error}
-        </Typography>
-        <form noValidate onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            label="Username"
-            margin="normal"
-            required
-            fullWidth
-            autoFocus
-            error={Boolean(errors.username)}
-            name="username"
-            inputRef={register({ required: true })}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">@</InputAdornment>
-              )
-            }}
-            variant="outlined"
-          />
-          {isRegister && (
-            <TextField
-              label="Name (changeable)"
-              margin="normal"
-              required
-              fullWidth
-              error={Boolean(errors.name)}
-              name="name"
-              inputRef={register({ required: true, minLength: 3 })}
-              variant="outlined"
-            />
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex flex-col align-center max-w-xs w-full mx-auto text-center py-32">
+        <h1 className="text-2xl text-medium mb-4">
+          {isRegister ? 'register' : 'login'}
+        </h1>
+        <h2
+          className={classNames('text-lg mb-8', {
+            'text-red-500': error
+          })}
+        >
+          {error || 'see you on the flip side!'}
+        </h2>
+        <input
+          name="username"
+          placeholder="username"
+          className={classNames(
+            'w-full mb-4 rounded px-4 py-3 shadow border-l-4 focus:outline-none',
+            {
+              'cursor-not-allowed': registerLoading || loginLoading,
+              'border-red-500': errors.username
+            }
           )}
-          <TextField
-            label="Password"
-            required
-            name="password"
-            margin="normal"
-            fullWidth
-            error={Boolean(errors.password)}
-            type="password"
-            inputRef={register({ required: true })}
-            variant="outlined"
+          ref={register({ required: true })}
+        />
+        {isRegister && (
+          <input
+            name="name"
+            placeholder="name (editable)"
+            className={classNames(
+              'w-full mb-4 rounded px-4 py-3 shadow border-l-4',
+              {
+                'cursor-not-allowed': registerLoading || loginLoading,
+                'border-red-500': errors.name
+              }
+            )}
+            ref={register({ required: true, minLength: 3 })}
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            size="large"
-            className={classes.submit}
-            disabled={loginLoading || registerLoading}
-          >
-            {isRegister ? 'Register' : 'Login'}
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            color="secondary"
-            onClick={onClick}
-          >
-            {isRegister ? 'Login' : 'Register'}
-          </Button>
-        </form>
+        )}
+        <input
+          name="password"
+          type="password"
+          placeholder="password"
+          className={classNames(
+            'w-full mb-4 rounded px-4 py-3 shadow border-l-4',
+            {
+              'cursor-not-allowed': registerLoading || loginLoading,
+              'border-red-500': errors.password
+            }
+          )}
+          ref={register({ required: true })}
+        />
+        <button
+          type="submit"
+          className={classNames(
+            'py-2 px-4 rounded focus:outline-none hover:bg-blue-700 bg-blue-500 text-white mb-4 shadow'
+          )}
+        >
+          {isRegister ? 'register' : 'login'}
+        </button>
+        <button
+          onClick={onClick}
+          className="py-2 px-4 rounded focus:outline-none hover:bg-gray-500 hover:text-white text-gray-800"
+        >
+          {isRegister ? 'login' : 'register'}
+        </button>
       </div>
-    </Container>
+    </form>
   );
+
+  /* return (
+   *   <Container maxWidth="xs">
+   *     <div className={classes.paper}>
+   *       <Typography variant="h4" gutterBottom>
+   *         {(isRegister && 'Register') || 'Login'}
+   *       </Typography>
+   *       <Typography variant="subtitle1" color="error" gutterBottom>
+   *         {error}
+   *       </Typography>
+   *       <form noValidate onSubmit={handleSubmit(onSubmit)}>
+   *         <TextField
+   *           label="Username"
+   *           margin="normal"
+   *           required
+   *           fullWidth
+   *           autoFocus
+   *           error={Boolean(errors.username)}
+   *           name="username"
+   *           inputRef={register({ required: true })}
+   *           InputProps={{
+   *             startAdornment: (
+   *               <InputAdornment position="start">@</InputAdornment>
+   *             )
+   *           }}
+   *           variant="outlined"
+   *         />
+   *         {isRegister && (
+   *           <TextField
+   *             label="Name (changeable)"
+   *             margin="normal"
+   *             required
+   *             fullWidth
+   *             error={Boolean(errors.name)}
+   *             name="name"
+   *             inputRef={register({ required: true, minLength: 3 })}
+   *             variant="outlined"
+   *           />
+   *         )}
+   *         <TextField
+   *           label="Password"
+   *           required
+   *           name="password"
+   *           margin="normal"
+   *           fullWidth
+   *           error={Boolean(errors.password)}
+   *           type="password"
+   *           inputRef={register({ required: true })}
+   *           variant="outlined"
+   *         />
+   *         <Button
+   *           type="submit"
+   *           fullWidth
+   *           variant="contained"
+   *           color="primary"
+   *           size="large"
+   *           className={classes.submit}
+   *           disabled={loginLoading || registerLoading}
+   *         >
+   *           {isRegister ? 'Register' : 'Login'}
+   *         </Button>
+   *         <Button
+   *           fullWidth
+   *           variant="contained"
+   *           color="secondary"
+   *           onClick={onClick}
+   *         >
+   *           {isRegister ? 'Login' : 'Register'}
+   *         </Button>
+   *       </form>
+   *     </div>
+   *   </Container>
+   * ); */
 };
