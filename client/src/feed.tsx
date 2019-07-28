@@ -54,11 +54,11 @@ export const Feed = () => {
   }
 
   return (
-    <>
+    <div className="max-w-2xl mx-auto">
       {loggedIn && <CreateMeow />}
       {data.feed.map((meow: getfeed_feed) => (
         <Meow key={meow.id} meow={meow} />
       ))}
-    </>
+    </div>
   );
 };

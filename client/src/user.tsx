@@ -69,10 +69,10 @@ export const User: React.FC<RouteComponentProps<{ username: string }>> = ({
     return <div>User not found!</div>; // TODO: go back and show notification
   }
   return (
-    <div className="flex mx-auto p-4 flex-wrap">
-      <div className="w-full md:w-1/3 text-center mb-6">
+    <div className="flex mx-auto p-4 flex-wrap max-w-4xl">
+      <div className="w-full lg:w-1/3 text-center mb-6">
         <div>
-          <ReactFitText compressor={2}>
+          <ReactFitText minFontSize={'16'} maxFontSize={'32'}>
             <h1>
               <ConditionalWrap
                 condition={myUsername === username}
@@ -84,12 +84,12 @@ export const User: React.FC<RouteComponentProps<{ username: string }>> = ({
               </ConditionalWrap>
             </h1>
           </ReactFitText>
-          <ReactFitText compressor={2.5}>
+          <ReactFitText compressor={1.5} minFontSize={'12'} maxFontSize={'24'}>
             <h2 className="text-gray-700">@{username}</h2>
           </ReactFitText>
         </div>
       </div>
-      <div className="w-full md:w-2/3">
+      <div className="w-full lg:w-2/3">
         {(data.user.meows || []).map(meow => (
           <Meow key={meow.id} noUserRedirect meow={meow} />
         ))}

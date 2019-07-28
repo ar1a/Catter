@@ -46,7 +46,7 @@ const App: React.FC = () => (
     <div className="font-sans">
       <Router>
         <Header />
-        <div className="container mx-auto pt-4 max-w-2xl sm:px-4">
+        <div className="container mx-auto pt-4 sm:px-4">
           <Switch>
             <Route path="/" exact component={Feed} />
             <PrivateRoute path="/logout" component={Logout} />
