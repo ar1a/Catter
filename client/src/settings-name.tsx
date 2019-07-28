@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import useForm from 'react-hook-form';
-import { Card, CardContent, TextField, Typography } from '@material-ui/core';
 import { useMutation } from 'react-apollo-hooks';
 import gql from 'graphql-tag';
 import { Redirect } from 'react-router-dom';
@@ -66,20 +65,6 @@ export const SettingsName = () => {
           ref={register({ required: true, minLength: 3 })}
         />
       </div>
-      {/* <CardContent>
-            <Typography color="error" gutterBottom>
-            {errorMessage(errors.name)}
-            </Typography>
-            <TextField
-            variant="outlined"
-            name="name"
-            fullWidth
-            required
-            label="Name"
-            error={Boolean(errors.name)}
-            inputRef={register({ required: true, minLength: 3 })}
-            />
-            </CardContent> */}
     </form>
   );
 };

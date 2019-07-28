@@ -34,14 +34,15 @@ interface Data {
 export const CreateMeow: React.FC<{ replyingTo?: string }> = ({
   replyingTo
 }) => {
-  const { register, handleSubmit, errors, watch } = useForm<Data>();
+  const { register, handleSubmit, watch } = useForm<Data>();
   const [postMeow, { loading }] = useMutation<postmeow>(POST_MEOW, {
     refetchQueries: ['getfeed', 'getmeow']
   });
 
   const onSubmit = useCallback(
-    ({ content }: Data) => postMeow({ variables: { content, replyingTo } }),
-    [postMeow, replyingTo]
+    ({ content }: Data) =>
+      !loading && postMeow({ variables: { content, replyingTo } }),
+    [postMeow, replyingTo, loading]
   );
 
   const content = watch('content') || '';
@@ -90,7 +91,8 @@ export const CreateMeow: React.FC<{ replyingTo?: string }> = ({
                   'rounded-full',
                   'bg-blue-500',
                   'hover:bg-blue-700',
-                  'text-white'
+                  'text-white',
+                  { 'cursor-not-allowed': loading }
                 )}
                 type="submit"
               >

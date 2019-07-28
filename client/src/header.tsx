@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { useUserState } from './user-state';
-import { ButtonLink } from './utils';
 import { Link } from 'react-router-dom';
 
 const HeaderButtons = ({
@@ -25,7 +24,6 @@ const HeaderButtons = ({
       >
         logout
       </Link>
-      {/* <ButtonLink to="/logout">logout</ButtonLink> */}
     </>
   ) : (
     <Link
@@ -59,18 +57,4 @@ export const Header = () => {
       </div>
     </nav>
   );
-  /* return (
-   *   <div>
-   *     <AppBar position="static">
-   *       <Toolbar>
-   *         <Typography variant="h6" className={classes.title}>
-   *           <ButtonLink size="large" to="/">
-   *             Catter
-   *           </ButtonLink>
-   *         </Typography>
-   *         <HeaderButtons authorized={authorized} username={username} />
-   *       </Toolbar>
-   *     </AppBar>
-   *   </div>
-   * ); */
 };
