@@ -55,7 +55,7 @@ export const CreateMeow: React.FC<{ replyingTo?: string }> = ({
             <TextareaAutosize
               placeholder={replyingTo ? 'Meow your reply' : "What's happening?"}
               name="content"
-              inputRef={register}
+              inputRef={register({ required: true, maxLength: 280 })}
               className={classNames(
                 'w-full',
                 'py-3',
