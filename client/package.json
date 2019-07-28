@@ -11,6 +11,7 @@
     "@types/react-dom": "16.8.4",
     "apollo": "2.15.0",
     "apollo-boost": "0.4.3",
+    "classnames": "^2.2.6",
     "conditional-wrap": "1.0.0",
     "fp-ts": "2.0.1",
     "graphql": "14.4.2",
@@ -18,11 +19,13 @@
     "react": "16.8.6",
     "react-apollo": "2.5.8",
     "react-apollo-hooks": "0.5.0",
+    "react-circular-progressbar": "^2.0.1",
     "react-dom": "16.8.6",
     "react-fittext": "1.0.0",
     "react-hook-form": "3.18.4",
     "react-router-dom": "5.0.1",
     "react-scripts": "3.0.1",
+    "react-textarea-autosize": "^7.1.0",
     "typescript": "3.5.1"
   },
   "scripts": {
@@ -42,7 +45,11 @@
     "extends": "react-app"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -53,8 +60,10 @@
     "graphql": "14.4.2"
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.9",
     "@types/ramda": "types/npm-ramda#dist",
     "@types/react-router-dom": "4.3.4",
+    "@types/react-textarea-autosize": "^4.3.4",
     "@typescript-eslint/eslint-plugin": "1.11.0",
     "@typescript-eslint/parser": "1.11.0",
     "autoprefixer": "^9.6.1",

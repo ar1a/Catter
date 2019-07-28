@@ -1,6 +1,3 @@
-import { Container, createMuiTheme, CssBaseline } from '@material-ui/core';
-import teal from '@material-ui/core/colors/teal';
-import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
 import {
   BrowserRouter as Router,
@@ -20,19 +17,6 @@ import { SettingsName } from './settings-name';
 import { Feed } from './feed';
 import { SingleMeow } from './meow';
 import { User } from './user';
-
-const theme = createMuiTheme({
-  typography: {
-    fontFamily: ['Jost', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(',')
-  },
-  palette: {
-    type: 'dark',
-    primary: teal,
-    secondary: {
-      main: '#f44336'
-    }
-  }
-});
 
 const PrivateRoute: React.FC<
   {
@@ -58,26 +42,23 @@ const PrivateRoute: React.FC<
 };
 
 const App: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <Provider>
-      <div className="font-sans">
-        <Router>
-          <CssBaseline />
-          <Header />
-          <Container style={{ paddingTop: 16 }}>
-            <Switch>
-              <Route path="/" exact component={Feed} />
-              <PrivateRoute path="/logout" component={Logout} />
-              <Route path="/login" component={Login} />
-              <PrivateRoute path="/settings/name" component={SettingsName} />
-              <Route path="/:username/:id" component={SingleMeow} />
-              <Route path="/:username" component={User} />
-            </Switch>
-          </Container>
-        </Router>
-      </div>
-    </Provider>
-  </ThemeProvider>
+  <Provider>
+    <div className="font-sans">
+      <Router>
+        <Header />
+        <div className="container mx-auto pt-4 max-w-2xl sm:px-4">
+          <Switch>
+            <Route path="/" exact component={Feed} />
+            <PrivateRoute path="/logout" component={Logout} />
+            <Route path="/login" component={Login} />
+            <PrivateRoute path="/settings/name" component={SettingsName} />
+            <Route path="/:username/:id" component={SingleMeow} />
+            <Route path="/:username" component={User} />
+          </Switch>
+        </div>
+      </Router>
+    </div>
+  </Provider>
 );
 
 export default App;
