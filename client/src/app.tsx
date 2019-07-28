@@ -60,20 +60,22 @@ const PrivateRoute: React.FC<
 const App: React.FC = () => (
   <ThemeProvider theme={theme}>
     <Provider>
-      <Router>
-        <CssBaseline />
-        <Header />
-        <Container style={{ paddingTop: 16 }}>
-          <Switch>
-            <Route path="/" exact component={Feed} />
-            <PrivateRoute path="/logout" component={Logout} />
-            <Route path="/login" component={Login} />
-            <PrivateRoute path="/settings/name" component={SettingsName} />
-            <Route path="/:username/:id" component={SingleMeow} />
-            <Route path="/:username" component={User} />
-          </Switch>
-        </Container>
-      </Router>
+      <div className="font-sans">
+        <Router>
+          <CssBaseline />
+          <Header />
+          <Container style={{ paddingTop: 16 }}>
+            <Switch>
+              <Route path="/" exact component={Feed} />
+              <PrivateRoute path="/logout" component={Logout} />
+              <Route path="/login" component={Login} />
+              <PrivateRoute path="/settings/name" component={SettingsName} />
+              <Route path="/:username/:id" component={SingleMeow} />
+              <Route path="/:username" component={User} />
+            </Switch>
+          </Container>
+        </Router>
+      </div>
     </Provider>
   </ThemeProvider>
 );
