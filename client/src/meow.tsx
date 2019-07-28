@@ -3,13 +3,13 @@ import { Redirect, RouteComponentProps } from 'react-router';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'react-apollo-hooks';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 
 import { getmeow } from './types/getmeow';
 import { deletemeow } from './types/deletemeow';
 import { likemeow } from './types/likemeow';
 import { Loader } from './loader';
 import { useUserState } from './user-state';
-import { ButtonLink } from './utils';
 import { CreateMeow } from './create-meow';
 
 const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
@@ -234,7 +234,9 @@ export const SingleMeow: React.FC<RouteComponentProps<Props>> = ({ match }) => {
     return (
       <div>
         Meow not found!{' '}
-        <ButtonLink to={`/${match.params.username}`}>To Profile</ButtonLink>
+        <Link to={`/${match.params.username}`} className="border-b">
+          To Profile
+        </Link>
       </div>
     );
   }

@@ -54,13 +54,23 @@ export const SettingsName = () => {
   }
 
   return (
-    <Card>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <CardContent>
-          <Typography color="error" gutterBottom>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <div>
+        <h2 className="mb-4 text-red-500 text-center">
+          {errorMessage(errors.name)}
+        </h2>
+        <input
+          placeholder="name"
+          name="name"
+          className=" rounded px-4 py-3 w-full focus:outline-none"
+          ref={register({ required: true, minLength: 3 })}
+        />
+      </div>
+      {/* <CardContent>
+            <Typography color="error" gutterBottom>
             {errorMessage(errors.name)}
-          </Typography>
-          <TextField
+            </Typography>
+            <TextField
             variant="outlined"
             name="name"
             fullWidth
@@ -68,9 +78,8 @@ export const SettingsName = () => {
             label="Name"
             error={Boolean(errors.name)}
             inputRef={register({ required: true, minLength: 3 })}
-          />
-        </CardContent>
-      </form>
-    </Card>
+            />
+            </CardContent> */}
+    </form>
   );
 };
