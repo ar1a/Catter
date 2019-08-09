@@ -5326,10 +5326,10 @@ forwarded@~0.1.2:
   resolved "https://registry.yarnpkg.com/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
   integrity sha1-mMI9qxF1ZXuMBXPozszZGw/xjIQ=
 
-fp-ts@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.0.1.tgz#0f6cb37f7f7014daf4c8b43d3c07b944219fa841"
-  integrity sha512-tw/L1f6hd29bYk3IlhA3qdnqz9LJ13yeecjk0XqC8g9E76P5ZXzNcjXA5zQ0zNlsGhdVhDIHRJB738oGpB8PnA==
+fp-ts@2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.0.4.tgz#a07ceef59c2460616fcf70367708ebe4d1c2212f"
+  integrity sha512-oRQbFqqGcvorkEj92dAcM4/RH1TARJCt8wVgynRIp8v4uOzVCe4kCs7vKSYpIXQsvtpyCt9nVVFqufSX8VYghg==
 
 fragment-cache@^0.2.1:
   version "0.2.1"

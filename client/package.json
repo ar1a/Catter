@@ -13,7 +13,7 @@
     "apollo-boost": "0.4.3",
     "classnames": "2.2.6",
     "conditional-wrap": "1.0.0",
-    "fp-ts": "2.0.1",
+    "fp-ts": "2.0.4",
     "graphql": "14.4.2",
     "ramda": "0.26.1",
     "react": "16.8.6",
