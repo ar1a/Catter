@@ -193,6 +193,8 @@ export const Mutation = prismaObjectType({
       },
       resolve: (_, { content, replyingTo }, ctx: Context) => {
         const userId = getUserId(ctx);
+        if (content.length > 280) throw new Error('Content too long');
+        if (content.length <= 0) throw new Error('Content too short');
         return ctx.prisma.createMeow({
           content: content.normalize(),
           author: { connect: { id: userId } },

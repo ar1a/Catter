@@ -1,24 +1,15 @@
 import React, { useState, useCallback } from 'react';
-import {
-  Card,
-  CardContent,
-  makeStyles,
-  createStyles,
-  Typography,
-  CardActions,
-  Button
-} from '@material-ui/core';
 import { Redirect, RouteComponentProps } from 'react-router';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from 'react-apollo-hooks';
-import { fade } from '@material-ui/core/styles';
+import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 
 import { getmeow } from './types/getmeow';
 import { deletemeow } from './types/deletemeow';
 import { likemeow } from './types/likemeow';
 import { Loader } from './loader';
 import { useUserState } from './user-state';
-import { ButtonLink } from './utils';
 import { CreateMeow } from './create-meow';
 
 const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
@@ -27,6 +18,7 @@ const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
   const onCardClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+      e.preventDefault();
       setToMeow(true);
     },
     [setToMeow]
@@ -34,34 +26,6 @@ const useMeowRedirect = (): [boolean, ((e: React.MouseEvent) => void)] => {
 
   return [toMeow, onCardClick];
 };
-
-const useStyles = makeStyles(theme =>
-  createStyles({
-    card: {
-      margin: '0 0 16px',
-      '&:hover': {
-        backgroundColor: fade(
-          theme.palette.text.primary,
-          theme.palette.action.hoverOpacity
-        ),
-        cursor: 'pointer'
-      },
-      wordWrap: 'break-word'
-    },
-    username: {
-      '&:hover': {
-        backgroundColor: fade(
-          theme.palette.text.primary,
-          theme.palette.action.hoverOpacity
-        ),
-        cursor: 'pointer'
-      }
-    },
-    delete: {
-      marginLeft: 'auto'
-    }
-  })
-);
 
 export const Meow: React.FC<{
   meow: {
@@ -87,8 +51,6 @@ export const Meow: React.FC<{
   noRedirect,
   noUserRedirect
 }) => {
-  const classes = useStyles();
-
   const [toMeow, onCardClick] = useMeowRedirect();
   const [toUser, onUserClick] = useMeowRedirect();
   const myUsername = useUserState('username');
@@ -104,24 +66,24 @@ export const Meow: React.FC<{
     { variables: { id } }
   );
 
-  const likes = `Like (${likedBy.length})`;
-
   const hasLiked = likedBy.filter(u => u.username === myUsername).length > 0;
+
+  const likes = `${hasLiked ? 'un' : ''}like (${likedBy.length})`;
 
   const onDeleteClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      deleteMeow();
+      if (!deleteLoading) deleteMeow();
     },
-    [deleteMeow]
+    [deleteMeow, deleteLoading]
   );
 
   const onLikeClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      likeMeow();
+      if (!likeLoading) likeMeow();
     },
-    [likeMeow]
+    [likeMeow, likeLoading]
   );
 
   if (!noRedirect) {
@@ -136,43 +98,60 @@ export const Meow: React.FC<{
     }
   }
   return (
-    <Card className={classes.card} onClick={onCardClick}>
-      <CardContent>
-        <Typography
-          color="textSecondary"
-          gutterBottom
+    <div
+      className="w-full overflow-hidden rounded shadow-md bg-white mb-4 focus:outline-none text-gray-800 cursor-pointer"
+      onClick={onCardClick}
+    >
+      <div className="block px-4 py-2 text-gray-600">
+        <a
           onClick={onUserClick}
-          className={classes.username}
+          href={`/${username}`}
+          className="hover:bg-gray-500 hover:text-white px-2 -mx-2"
         >
-          {name || 'INVALID NAME'} · @{username}
+          {name || 'INVALID NAME'} &middot; @{username}
           {replyingTo && ` · Replying to @${replyingTo.author.username}`}
-        </Typography>
-        <Typography variant="h5" component="p">
-          {content}
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button
-          size="medium"
-          color={hasLiked ? 'primary' : undefined}
+        </a>
+      </div>
+      <div className="px-4 pb-4 text-xl">
+        <h1>{content}</h1>
+      </div>
+      <div className="bg-gray-300 px-4 flex justify-between">
+        <button
+          className={classNames(
+            'hover:bg-blue-200',
+            'py-2',
+            'px-4',
+            '-ml-4',
+            'rounded',
+            hasLiked ? 'font-semibold' : 'font-medium',
+            'focus:outline-none',
+            {
+              'cursor-not-allowed': likeLoading
+            }
+          )}
           onClick={onLikeClick}
-          disabled={likeLoading}
         >
           {likes}
-        </Button>
+        </button>
         {myUsername && myUsername === username && (
-          <Button
-            size="small"
-            color="secondary"
-            className={classes.delete}
+          <button
             onClick={onDeleteClick}
-            disabled={deleteLoading}
+            className={classNames(
+              'hover:bg-gray-500',
+              'hover:text-white',
+              'py-2',
+              'px-4',
+              '-mr-4',
+              'rounded',
+              'focus:outline-none',
+              'text-gray-800'
+            )}
           >
-            Delete
-          </Button>
+            delete
+          </button>
         )}
-      </CardActions>
-    </Card>
+      </div>
+    </div>
   );
 };
 
@@ -255,7 +234,9 @@ export const SingleMeow: React.FC<RouteComponentProps<Props>> = ({ match }) => {
     return (
       <div>
         Meow not found!{' '}
-        <ButtonLink to={`/${match.params.username}`}>To Profile</ButtonLink>
+        <Link to={`/${match.params.username}`} className="border-b">
+          To Profile
+        </Link>
       </div>
     );
   }

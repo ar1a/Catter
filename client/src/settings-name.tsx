@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import useForm from 'react-hook-form';
-import { Card, CardContent, TextField, Typography } from '@material-ui/core';
 import { useMutation } from 'react-apollo-hooks';
 import gql from 'graphql-tag';
 import { Redirect } from 'react-router-dom';
@@ -54,23 +53,18 @@ export const SettingsName = () => {
   }
 
   return (
-    <Card>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <CardContent>
-          <Typography color="error" gutterBottom>
-            {errorMessage(errors.name)}
-          </Typography>
-          <TextField
-            variant="outlined"
-            name="name"
-            fullWidth
-            required
-            label="Name"
-            error={Boolean(errors.name)}
-            inputRef={register({ required: true, minLength: 3 })}
-          />
-        </CardContent>
-      </form>
-    </Card>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <div>
+        <h2 className="mb-4 text-red-500 text-center">
+          {errorMessage(errors.name)}
+        </h2>
+        <input
+          placeholder="name"
+          name="name"
+          className=" rounded px-4 py-3 w-full focus:outline-none"
+          ref={register({ required: true, minLength: 3 })}
+        />
+      </div>
+    </form>
   );
 };
