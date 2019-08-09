@@ -45,11 +45,7 @@
     "extends": "react-app"
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -67,7 +63,7 @@
     "@typescript-eslint/eslint-plugin": "1.13.0",
     "@typescript-eslint/parser": "1.13.0",
     "autoprefixer": "9.6.1",
-    "babel-eslint": "10.0.2",
+    "babel-eslint": "10.0.1",
     "eslint": "5.16.0",
     "eslint-config-prettier": "6.0.0",
     "eslint-config-react-app": "4.0.1",
