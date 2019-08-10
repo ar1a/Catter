@@ -1,7 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import { useUserState } from './user-state';
-import { Link } from 'react-router-dom';
 
 const HeaderButtons = ({
   authorized,
