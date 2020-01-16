@@ -110,7 +110,7 @@ export const Mutation = prismaObjectType({
         };
 
         const hashPassword = ({ password }: Schema) =>
-          TE.tryCatch(constant(hash(password)), constant('UNREACHABLE ID: 5'));
+          TE.tryCatch(() => hash(password), constant('UNREACHABLE ID: 5'));
 
         const createUser = (username: string, name: string) => (
           hashedPassword: null
