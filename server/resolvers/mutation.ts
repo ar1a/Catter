@@ -6,15 +6,12 @@ import { validate } from 'the-big-username-blacklist';
 import * as zxcvbn from 'zxcvbn';
 import * as yup from 'yup';
 import * as R from 'ramda';
-import {
-  tryCatch,
-  leftTask,
-  rightTask,
-  TaskEither,
-  chain,
-  map
-} from 'fp-ts/lib/TaskEither';
-import { left, right, fold } from 'fp-ts/lib/Either';
+import { constant, identity, Lazy } from 'fp-ts/lib/function';
+import * as T from 'fp-ts/lib/Task';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { Task } from 'fp-ts/lib/Task';
+import * as E from 'fp-ts/lib/Either';
+import { leftTask, rightTask, TaskEither } from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/pipeable';
 import { filter, isEmpty } from 'fp-ts/lib/Array';
 
@@ -27,6 +24,15 @@ const nameSchema = yup
   .trim()
   .min(3);
 
+const tryCatch = <A>(f: Lazy<Promise<A>>): TaskEither<string, A> =>
+  TE.tryCatch(f, ({ message }: Error) => message);
+
+type HandleError = <A>(t: TaskEither<string, A>) => Task<A>;
+const handleError: HandleError = T.map(
+  E.fold(error => {
+    throw new Error(error);
+  }, identity)
+);
 const signupSchema = yup.object().shape({
   username: yup
     .string()
@@ -51,16 +57,10 @@ interface Schema {
   password: string;
 }
 
-// constant :: a -> b -> a
-const constant = <T>(a: T) => (_: any) => a;
+const fetchOrElse = <Err, Value>(onNull: Err) => (
+  f: Task<Value | null>
+): TaskEither<Err, Value> => pipe(f, T.map(E.fromNullable(onNull)));
 
-const fromNullablePromise = <Err, Value>(
-  f: () => Promise<Value | null>,
-  onNull: Err
-): TaskEither<Err, Value> => async () =>
-  f().then(valueOrNull =>
-    valueOrNull === null ? left(onNull) : right(valueOrNull)
-  );
 const getToken = (user: User) => ({
   token: sign({ userId: user.id }, APP_SECRET),
   user
@@ -77,10 +77,7 @@ export const Mutation = prismaObjectType({
         name: stringArg()
       },
       resolve: async (_, args, ctx: Context) => {
-        const validateSchema = tryCatch(
-          () => signupSchema.validate(args),
-          (a: Error) => a.message
-        );
+        const validateSchema = tryCatch(() => signupSchema.validate(args));
 
         const validatePassword = ({ username, password, name }) => {
           const {
@@ -90,10 +87,7 @@ export const Mutation = prismaObjectType({
           const suggestions_ = R.ifElse(
             R.isEmpty,
             constant(''),
-            R.pipe(
-              R.join(' '),
-              R.concat('Some suggestions are: ')
-            )
+            R.pipe(R.join(' '), R.concat('Some suggestions are: '))
           )(suggestions);
 
           const warning_ = R.ifElse(
@@ -116,39 +110,31 @@ export const Mutation = prismaObjectType({
         };
 
         const hashPassword = ({ password }: Schema) =>
-          tryCatch(() => hash(password), constant('UNREACHABLE ID: 5'));
+          TE.tryCatch(constant(hash(password)), constant('UNREACHABLE ID: 5'));
 
         const createUser = (username: string, name: string) => (
           hashedPassword: null
         ) =>
-          tryCatch(
-            () =>
-              ctx.prisma.createUser({
-                username,
-                password: hashedPassword,
-                name
-              }),
-            (a: Error) => a.message
+          tryCatch(() =>
+            ctx.prisma.createUser({
+              username,
+              password: hashedPassword,
+              name
+            })
           );
 
         return pipe(
           validateSchema,
-          chain(validatePassword),
-          chain(({ username, password, name }) =>
+          TE.chain(validatePassword),
+          TE.chain(({ username, password, name }) =>
             pipe(
               hashPassword({ username, password, name }),
-              chain(createUser(username, name))
+              TE.chain(createUser(username, name))
             )
           ),
-          map(getToken)
-        )().then(
-          fold(
-            err => {
-              throw new Error(err);
-            },
-            a => a
-          )
-        );
+          TE.map(getToken),
+          handleError
+        )();
       }
     });
 
@@ -159,29 +145,26 @@ export const Mutation = prismaObjectType({
         password: stringArg()
       },
       resolve: (_, { username, password }, ctx: Context) => {
-        const getUser = fromNullablePromise(
-          () => ctx.prisma.user({ username: username.toLowerCase().trim() }),
-          'No user found with that username'
+        const getUser = pipe(
+          constant(
+            ctx.prisma.user({ username: username.toLowerCase().trim() })
+          ),
+          fetchOrElse('No user found with that username')
         );
 
         const verifyPassword = (user: User) =>
-          fromNullablePromise(
-            () => verify(user.password, password).then(b => (b ? user : null)),
-            'Password invalid'
+          pipe(
+            constant(verify(user.password, password)),
+            T.map(b => (b ? user : null)),
+            fetchOrElse('Password invalid')
           );
 
         return pipe(
           getUser,
-          chain(verifyPassword),
-          map(getToken)
-        )().then(
-          fold(
-            err => {
-              throw new Error(err);
-            },
-            a => a
-          )
-        );
+          TE.chain(verifyPassword),
+          TE.map(getToken),
+          handleError
+        )();
       }
     });
 
@@ -217,9 +200,9 @@ export const Mutation = prismaObjectType({
       resolve: async (_, { id }, ctx: Context) => {
         const userId = getUserId(ctx);
 
-        const getLikedBy = fromNullablePromise<string, User[]>(
+        const getLikedBy = pipe(
           () => ctx.prisma.meow({ id }).likedBy(),
-          'Meow does not exist'
+          fetchOrElse('Meow does not exist')
         );
 
         const isMeowLiked = (us: User[]) =>
@@ -230,32 +213,23 @@ export const Mutation = prismaObjectType({
           );
 
         const updateMeow = (isLiked: boolean): TaskEither<string, Meow> =>
-          isLiked
-            ? rightTask(async () =>
-                ctx.prisma.updateMeow({
-                  data: { likedBy: { disconnect: { id: userId } } },
-                  where: { id }
-                })
-              )
-            : rightTask(async () =>
-                ctx.prisma.updateMeow({
-                  data: { likedBy: { connect: { id: userId } } },
-                  where: { id }
-                })
-              );
+          rightTask(() =>
+            ctx.prisma.updateMeow({
+              data: {
+                likedBy: {
+                  [isLiked ? 'connect' : 'disconnect']: { id: userId }
+                }
+              },
+              where: { id }
+            })
+          );
 
         return pipe(
           getLikedBy,
-          map(isMeowLiked),
-          chain(updateMeow)
-        )().then(
-          fold(
-            error => {
-              throw new Error(error);
-            },
-            a => a
-          )
-        );
+          TE.map(isMeowLiked),
+          TE.chain(updateMeow),
+          handleError
+        )();
       }
     });
 
@@ -264,35 +238,19 @@ export const Mutation = prismaObjectType({
       args: {
         name: stringArg()
       },
-      resolve: (_, args, ctx: Context) => {
-        const id = getUserId(ctx);
-        const validateSchema = tryCatch(
-          () => nameSchema.validate(args.name),
-          (a: Error) => a.message
-        );
-
-        const updateUser = (name: string) =>
-          tryCatch(
-            () =>
+      resolve: (_, args, ctx: Context) =>
+        pipe(
+          tryCatch(() => nameSchema.validate(args.name)),
+          TE.chain(name =>
+            tryCatch(() =>
               ctx.prisma.updateUser({
-                where: { id },
+                where: { id: getUserId(ctx) },
                 data: { name }
-              }),
-            (a: Error) => a.message
-          );
-
-        return pipe(
-          validateSchema,
-          chain(updateUser)
-        )().then(
-          fold(
-            error => {
-              throw new Error(error);
-            },
-            a => a
-          )
-        );
-      }
+              })
+            )
+          ),
+          handleError
+        )()
     });
   }
 });
