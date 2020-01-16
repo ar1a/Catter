@@ -19,7 +19,7 @@
     "react": "16.9.0",
     "react-apollo": "2.5.8",
     "react-apollo-hooks": "0.5.0",
-    "react-circular-progressbar": "2.0.1",
+    "react-circular-progressbar": "2.0.3",
     "react-dom": "16.9.0",
     "react-fittext": "1.0.0",
     "react-hook-form": "3.21.11",
