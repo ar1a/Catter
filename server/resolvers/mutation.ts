@@ -146,15 +146,13 @@ export const Mutation = prismaObjectType({
       },
       resolve: (_, { username, password }, ctx: Context) => {
         const getUser = pipe(
-          constant(
-            ctx.prisma.user({ username: username.toLowerCase().trim() })
-          ),
+          () => ctx.prisma.user({ username: username.toLowerCase().trim() }),
           fetchOrElse('No user found with that username')
         );
 
         const verifyPassword = (user: User) =>
           pipe(
-            constant(verify(user.password, password)),
+            () => verify(user.password, password),
             T.map(b => (b ? user : null)),
             fetchOrElse('Password invalid')
           );
